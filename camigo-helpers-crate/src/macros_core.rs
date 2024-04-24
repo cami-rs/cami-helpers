@@ -39,6 +39,8 @@ macro_rules! core_wrap_struct {
 }
 
 /// Implement [core::cmp::PartialEq] for type `T` that implements[crate::CamiPartialEq].
+///
+/// There is no corresponding macro for [core::cmp::Eq]. Implement it if you see fit.
 #[macro_export]
 macro_rules! core_partial_eq {
     ($wrapper_name:ident <$generics:tt> $T:ty) => {
@@ -58,15 +60,6 @@ macro_rules! core_partial_eq {
                     || T::LOCALITY.has_non_local() && !self.t.eq_non_local(&other.t)
             }
         }
-    };
-}
-
-// Not really necessary, but let's have it for consistency.
-/// Implement [core::cmp::Eq] for type `T` that implements[crate::CamiPartialEq].
-#[macro_export]
-macro_rules! core_eq {
-    ($wrapper_name:ident <$generics:tt> $T:ty) => {
-        impl<$generics> ::core::cmp::Eq for $wrapper_name<$T> where $T: camigo::CamiPartialEq {}
     };
 }
 
