@@ -14,7 +14,7 @@ name = "camigo-helpers"
 version = "0.1.0"
 
 [[package]]
-name = "tests"
+name = "camigo-helpers-tests"
 version = "0.1.0"
 dependencies = [
  "camigo",

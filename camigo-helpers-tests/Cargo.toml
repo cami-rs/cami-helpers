@@ -1,11 +1,11 @@
 [package]
-name = "tests"
+name = "camigo-helpers-tests"
 version = "0.1.0"
 edition = "2021"
 
 [dependencies]
 camigo = { path = "../../camigo" }
-camigo-helpers = { path = ".." }
+camigo-helpers = { path = "../camigo-helpers-crate" }
 
 [[test]]
 name = "module-based-tests"
