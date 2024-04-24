@@ -13,4 +13,6 @@ repository = "https://github.com/peter-kehl/camigo-helpers"
 
 # TODO MSRV
 
+exclude = ["subtests"]
+
 [dependencies]

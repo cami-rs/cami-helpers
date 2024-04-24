@@ -6,3 +6,7 @@ edition = "2021"
 [dependencies]
 camigo = { path = "../../camigo" }
 camigo-helpers = { path = ".." }
+
+[[test]]
+name = "module-based-tests"
+path = "src/tests.rs"

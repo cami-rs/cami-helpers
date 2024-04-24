@@ -3,6 +3,8 @@
 //! are also used in [camigo] crate itself, and this crate itself can't access `::camigo`,
 //! unfortunately.)
 
+#![no_std]
+
 pub use locality::{
     debug_fail_unreachable_for_local, debug_fail_unreachable_for_non_local, Locality,
 };
