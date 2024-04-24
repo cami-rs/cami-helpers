@@ -2,6 +2,8 @@
 #[macro_export]
 macro_rules! core_wrap_struct {
     // NOT adding Clone/Debug
+    //
+    // @TODO remove "<T>"
     ($struct_name:ident) => {
         core_wrap_struct! { $struct_name <T> T}
     };
@@ -9,26 +11,23 @@ macro_rules! core_wrap_struct {
         core_wrap_struct! { [::core::clone::Clone, ::core::fmt::Debug] $struct_name <$generics> t $T}
     };
     // NOT adding Clone/Debug
+    //
+    // @TODO "where" (bounds) part
+    //
+    // @TODO here & at cami_partial_ord etc: support Higher Trait Bounds <- nomicon
     ([$($($derived:path),+)?] $struct_name:ident <$generics:tt> $t:ident $T:ty) => {
-        /// @TODO replace $item_type in this doc:
-        ///
-        /// A (zero cost/low cost) wrapper & bridge that implements [::core::cmp::PartialEq]
-        /// forwarding to [camigo::CamiPartialEq] and [::core::cmp::Ord] forwarding to [camigo::CamiOrd]
-        /// of `$item_type`.
+        // @TODO Try to generate #[doc(...)] and inject $T into this doc comment.
+        //
+        // @TODO the same for cami_wrap_struct etc.
+        /// A zero cost (transparent) wrapper that implements [::core::cmp::PartialEq] forwarding to
+        /// [camigo::CamiPartialEq] and [::core::cmp::Ord] forwarding to [camigo::CamiOrd] of `T`.
         ///
         /// These implementations are useful, and for many data types it may speed up searches etc.
         /// (anything based on comparison).
         ///
-        /// NO cache-specific benefit for [camigo::Slice]'s cache-aware methods (`binary_search_cf`
-        /// etc.) themselves!
-        ///
-        /// Usable for BENCHMARKING. It allows us to run slice's `binary_search`:
-        /// `<[$item_type]>::binary_search(self, given)` using the full comparison, and benchmark
-        /// against cache-aware [camigo::Slice]'s `binary_search_cf` etc.
-        ///
         /// [::core::cmp::PartialEq] is implemented NOT by forwarding to [::core::cmp::PartialEq]'s
-        /// `eq` and `ne` of `$item_type`, but by forwarding to[camigo::CamiOrd]'s `cmp_local`] and
-        /// `cmp_non_local`` of `$item_type` instead. (Hence `$item_type` itself doesn't need to be
+        /// `eq` and `ne` of `T`, but by forwarding to[camigo::CamiOrd]'s `cmp_local`] and
+        /// `cmp_non_local`` of `T` instead. (Hence `T` itself doesn't need to be
         /// [::core::cmp::PartialEq] or [::core::cmp::Ord].)
         $(#[derive($($derived),+)])?
         #[repr(transparent)]
