@@ -17,7 +17,7 @@
 // BUT, we would have to duplice all matcher parts/patterns of those macros - to match with this
 // optional parameter, and without it. AND, the matcher parts/patterns are already LONG.
 
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 
 pub use locality::{
     debug_fail_unreachable_for_local, debug_fail_unreachable_for_non_local, Locality,
@@ -31,3 +31,6 @@ pub use macros_cami::always_equal_ref;
 #[macro_use]
 mod macros_core;
 pub mod prelude;
+
+#[cfg(feature = "alloc")]
+extern crate alloc;

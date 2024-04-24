@@ -57,6 +57,9 @@ macro_rules! cami_wrap_struct {
     };
 }
 
+/// Like standard tuples, this accepts any (optional) "where" bound(s) AFTER the definition of the
+/// tuple-wrapped fields (AFTER `(wrapped-type)` or (pub wripped-type)...). So that is different to
+/// [cami_wrap_struct].
 #[macro_export]
 macro_rules! cami_wrap_tuple {
     // An INTERNAL rule

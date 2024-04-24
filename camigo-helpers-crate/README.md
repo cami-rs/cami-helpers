@@ -17,5 +17,5 @@ If you haven't seen `core` top-level module in Rust, think of it as a subset of 
 functionality present in both `std` and `core` can be referred through either, as if through an
 alias.)
 
-Embedded/WASM/`no_std` developers: Any code from `core_*` macros works work in `no_std` and doesn't
-need `alloc`.
+Embedded/WASM/`no_std` developers: Any code from `cami_*` and `core_*` macros works  in `no_std`,
+and it doesn't need `alloc`.
