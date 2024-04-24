@@ -7,4 +7,5 @@
 mod tests {
     mod macros_cami_tests_basic;
     mod macros_cami_tests_party;
+    mod macros_core_tests_basic;
 }
