@@ -1,4 +1,4 @@
-use camigo_helpers::{ca_ord, ca_partial_eq, ca_wrap_struct, ca_wrap_tuple, Locality};
+use camigo_helpers::{cami_ord, cami_partial_eq, cami_wrap_struct, cami_wrap_tuple, Locality};
 
 #[test]
 fn main() {}
@@ -9,33 +9,33 @@ struct A {
     v: Vec<i32>,
 }
 
-ca_wrap_struct! {
+cami_wrap_struct! {
     _CaWrap2 <A> {
         pub t : Vec<A>
     }
 }
 
-ca_wrap_struct! { CaWrapA1 {t : A }}
-ca_partial_eq! {
+cami_wrap_struct! { CaWrapA1 {t : A }}
+cami_partial_eq! {
     CaWrapA1 {
         Locality::Both => t
     }
     [ (|this: &A, other: &A| this.x==other.x) ]
     [.v]
 }
-ca_ord! {
+cami_ord! {
     CaWrapA1 { t }
     [ {|a: &A| a.x} ]
     [v]
 }
 
-ca_wrap_tuple! { _CaTupleGen1 <T> (pub T) where T: Clone}
+cami_wrap_tuple! { _CaTupleGen1 <T> (pub T) where T: Clone}
 
-ca_wrap_tuple! { CaTupleA2 (A) }
+cami_wrap_tuple! { CaTupleA2 (A) }
 fn get_v<'a>(wrap: &'a A) -> &'a Vec<i32> {
     &wrap.v
 }
-ca_partial_eq! {
+cami_partial_eq! {
     <'a>
     CaTupleA2 {
         Locality::Both => 0
@@ -50,7 +50,7 @@ ca_partial_eq! {
     [ {get_v} ]
     []
 }
-ca_ord! {
+cami_ord! {
     CaTupleA2 { 0 }
     [( |this: &A, other: &A| this.x.cmp(&other.x) )]
     [v]

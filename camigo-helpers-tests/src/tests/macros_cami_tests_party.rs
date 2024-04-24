@@ -1,10 +1,10 @@
-use camigo_helpers::{ca_partial_eq, Locality};
+use camigo_helpers::{cami_partial_eq, Locality};
 
 #[test]
 fn main() {}
 
 struct Empty {}
-ca_partial_eq! {
+cami_partial_eq! {
     Empty {
         Locality::Both
     }
@@ -54,7 +54,7 @@ pub struct Table(Food, Food);
 
 pub struct Room(Table, Table);
 
-ca_partial_eq! {
+cami_partial_eq! {
     Food {
         Locality::Both
     }
@@ -63,7 +63,7 @@ ca_partial_eq! {
     [name]
 }
 
-ca_partial_eq! {
+cami_partial_eq! {
     FoodList {
         Locality::Both
     }
@@ -80,7 +80,7 @@ ca_partial_eq! {
     ]
     []
 }
-ca_partial_eq! {
+cami_partial_eq! {
     Table {
         Locality::Both
     }
@@ -93,7 +93,7 @@ ca_partial_eq! {
     ]
     []
 }
-ca_partial_eq! {
+cami_partial_eq! {
     Room {
         Locality::Both
     }
