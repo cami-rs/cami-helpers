@@ -1,5 +1,5 @@
 //! Testing [camigo_helpers].
- 
+
 // Based on https://mozilla.github.io/application-services/book/design/test-faster.html.
 //
 // This extra module level is needed here, because [[test]] makes this file the top of the test
