@@ -2,14 +2,8 @@
 use core::ops::DerefPure;
 use core::ops::{Deref, DerefMut};
 
-//#[cfg(test)]
-//mod mac_ca_tests_basic;
-
-//#[cfg(test)]
-//mod mac_ca_tests_party;
-
 #[macro_export]
-macro_rules! ca_wrap_struct {
+macro_rules! cami_wrap_struct {
     // An INTERNAL rule
     (@[$($($derived:path),+)?]
      $struct_vis:vis
@@ -44,7 +38,7 @@ macro_rules! ca_wrap_struct {
     ([$($($derived:path),+)?]
      $($tt:tt)+
     ) => {
-        ca_wrap_struct! {
+        cami_wrap_struct! {
             @
             [$($($derived),+)?]
             $($tt)+
@@ -52,7 +46,7 @@ macro_rules! ca_wrap_struct {
     };
     // Default the derived trait impls
     ($($tt:tt)+) => {
-        ca_wrap_struct! {
+        cami_wrap_struct! {
             @
             [
             ::core::clone::Clone, ::core::fmt::Debug, ::core::cmp::Eq, ::core::cmp::Ord,
@@ -64,7 +58,7 @@ macro_rules! ca_wrap_struct {
 }
 
 #[macro_export]
-macro_rules! ca_wrap_tuple {
+macro_rules! cami_wrap_tuple {
     // An INTERNAL rule
     (@
      [$($($derived:path),+)?]
@@ -99,7 +93,7 @@ macro_rules! ca_wrap_tuple {
     ([$($($derived:path),+)?]
      $($tt:tt)+
     ) => {
-        ca_wrap_tuple! {
+        cami_wrap_tuple! {
             @
             [$($($derived),+)?]
             $($tt)+
@@ -107,7 +101,7 @@ macro_rules! ca_wrap_tuple {
     };
     // Default the derived trait impls
     ($($tt:tt)+) => {
-        ca_wrap_tuple! {
+        cami_wrap_tuple! {
             @
             [
             ::core::clone::Clone, ::core::fmt::Debug, ::core::cmp::Eq, ::core::cmp::Ord,
@@ -135,7 +129,7 @@ pub fn always_equal_ref<T>(_instance: &T) -> &() {
 }
 
 #[macro_export]
-macro_rules! ca_partial_eq {
+macro_rules! cami_partial_eq {
     (
      $(<$($generic_left:tt $(: $bound:tt)?),+>)?
      $struct_path:path
@@ -155,7 +149,7 @@ macro_rules! ca_partial_eq {
      // The following two or three square pairs [] represent:
      // - local field(s),
      // - non-local field(s), and
-     // - optional: field(s) that themselves implement [camigo::CPartialEq] ("camigo field(s)").
+     // - optional: field(s) that themselves implement [camigo::CamiPartialEq] ("camigo field(s)").
      //
      // Any of those two or three kinds of fields may be "deep fields".
      //
@@ -184,7 +178,7 @@ macro_rules! ca_partial_eq {
     ]
     )?
     ) => {
-        $crate::ca_partial_eq_full_squares! {
+        $crate::cami_partial_eq_full_squares! {
             $(<$($generic_left $(: $bound)?),+>)?
             $struct_path
             $(>$($generic_right),+<)?
@@ -236,7 +230,7 @@ macro_rules! ca_partial_eq {
     ]
     )?
     ) => {
-        $crate::ca_partial_eq_full_squares! {
+        $crate::cami_partial_eq_full_squares! {
             $(<$($generic_left $(: $bound)?),+>)?
             $struct_path
             $(>$($generic_right),+<)?
@@ -264,7 +258,7 @@ macro_rules! ca_partial_eq {
 }
 
 #[macro_export]
-macro_rules! ca_partial_eq_full_squares {
+macro_rules! cami_partial_eq_full_squares {
     ($(<$($generic_left:tt $(: $bound:tt)?),+>)?
      $struct_path:path
      $(>$($generic_right:tt),+<)?
@@ -387,7 +381,7 @@ macro_rules! ca_partial_eq_full_squares {
      )?
     ) => {
         impl $(<$($generic_left $(: $bound)?)+>)?
-        camigo::CPartialEq for $struct_path $(<$($generic_right),+>)?
+        camigo::CamiPartialEq for $struct_path $(<$($generic_right),+>)?
         $(where $($left : $right),+)? {
             const LOCALITY: $crate::Locality = $locality;
 
@@ -638,9 +632,9 @@ macro_rules! ca_partial_eq_full_squares {
     };
 }
 
-/// Like [c_partial_eq], but for [camigo::COrd].
+/// Like [c_partial_eq], but for [camigo::CamiOrd].
 #[macro_export]
-macro_rules! ca_ord {
+macro_rules! cami_ord {
     ($(<$($generic_left:tt $(: $bound:tt)?),+>)?
      $struct_path:path
      $(>$($generic_right:tt),+<)?
@@ -687,10 +681,10 @@ macro_rules! ca_ord {
      ]
     ) => {
         impl $(<$($generic_left $(: $bound)?)+>)?
-        camigo::COrd for $struct_path $(<$($generic_right),+>)?
+        camigo::CamiOrd for $struct_path $(<$($generic_right),+>)?
         $(where $($left : $right),+)? {
             fn cmp_local(&self, other: &Self) -> ::core::cmp::Ordering {
-                use camigo::CPartialEq;
+                use camigo::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_local();
                 let this = &self;
                 $( let this = &this.$t;
@@ -732,7 +726,7 @@ macro_rules! ca_ord {
             }
 
             fn cmp_non_local(&self, other: &Self) -> ::core::cmp::Ordering {
-                use camigo::CPartialEq;
+                use camigo::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_non_local();
                 let this = &self;
                 $( let this = &this.$t;
@@ -778,7 +772,7 @@ macro_rules! ca_ord {
 #[macro_export]
 macro_rules! pure_local_c_partial_eq {
     ($T:ident) => {
-        impl camigo::CPartialEq for $T {
+        impl camigo::CamiPartialEq for $T {
             const LOCALITY: $crate::Locality = $crate::Locality::PureLocal;
 
             fn eq_local(&self, other: &Self) -> bool {
@@ -799,7 +793,7 @@ macro_rules! pure_local_c_partial_eq {
 #[macro_export]
 macro_rules! pure_local_c_ord {
     ($T:ident) => {
-        impl camigo::COrd for $T {
+        impl camigo::CamiOrd for $T {
             fn cmp_local(&self, other: &Self) -> core::cmp::Ordering {
                 self.cmp(other)
             }
@@ -828,7 +822,7 @@ impl From<&str> for CaWrap {
     }
 }
 
-ca_wrap_struct! {
+cami_wrap_struct! {
     pub CaWrap {
         t : u8
     }
@@ -861,13 +855,13 @@ fn _deref(caw: &CaWrap) {
     let _ = caw.len();
 }
 
-ca_wrap_struct! { [Clone, Debug] _CaWrap3 <T> {t : T }}
-ca_wrap_struct! { [Clone, Debug] _CaWrap4 <T:Sized> {t : T }}
-ca_wrap_struct! {
+cami_wrap_struct! { [Clone, Debug] _CaWrap3 <T> {t : T }}
+cami_wrap_struct! { [Clone, Debug] _CaWrap4 <T:Sized> {t : T }}
+cami_wrap_struct! {
     [Clone, Debug]
     _CaWrap5 <T>
     where T: 'static {
         t : T
     }
 }
-ca_wrap_struct! { pub CaWrapPub {pub t : u8}}
+cami_wrap_struct! { pub CaWrapPub {pub t : u8}}

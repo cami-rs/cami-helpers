@@ -12,6 +12,6 @@ pub use locality::{
 mod locality;
 
 #[macro_use]
-mod macros_ca;
-pub use macros_ca::always_equal_ref;
+mod macros_cami;
+pub use macros_cami::always_equal_ref;
 pub mod prelude;

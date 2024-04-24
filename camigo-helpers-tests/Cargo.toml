@@ -10,3 +10,6 @@ camigo-helpers = { path = "../camigo-helpers-crate" }
 [[test]]
 name = "module-based-tests"
 path = "src/tests.rs"
+
+[lints.rust]
+warnings = "allow"
