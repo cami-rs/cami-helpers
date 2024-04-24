@@ -1,0 +1,16 @@
+[package]
+name = "camigo-helpers"
+version = "0.1.0"
+edition = "2021"
+# TODO Could this be 2018 edition?
+
+description = "Cache-friendly comparison, binary & sequential search. Helpers, infrequently updated."
+categories = ["algorithms", "caching", "data-structures", "no-std", "text-processing"]
+
+authors = ["Peter Kehl <peter.kehl@gmail.com>"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/peter-kehl/camigo-helpers"
+
+# TODO MSRV
+
+[dependencies]
