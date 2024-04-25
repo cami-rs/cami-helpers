@@ -15,7 +15,7 @@
 //    an `pub use crate as camigo;` (as this crate already does).
 //
 // BUT, we would have to duplice all matcher parts/patterns of those macros - to match with this
-// optional parameter, and without it. AND, the matcher parts/patterns are already LONG.
+// optional parameter, and without it. AND, the matcher parts/patterns themselves are already LONG.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 

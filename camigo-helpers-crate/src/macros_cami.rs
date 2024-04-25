@@ -15,7 +15,6 @@ macro_rules! cami_wrap_struct {
      $t:ident
      : $T:ty
      }
-
     ) => {
         /// A zero cost (transparent) wrapper struct around a given type. For use with other macros
         /// from this crate.
@@ -27,6 +26,7 @@ macro_rules! cami_wrap_struct {
             $field_vis $t: $T
         }
     };
+
     // The following prevents recursion on incorrect macro invocation
     (@
      $($tt:tt)+
@@ -34,6 +34,7 @@ macro_rules! cami_wrap_struct {
         INCORRECT_MACRO_INVOCATION
         $($tt:tt)+
     };
+
     // NOT adding Clone/Debug/Eq/Ord/PartialEq/PartialOrd to $derived
     ([$($($derived:path),+)?]
      $($tt:tt)+
@@ -44,6 +45,7 @@ macro_rules! cami_wrap_struct {
             $($tt)+
         }
     };
+
     // Default the derived trait impls
     ($($tt:tt)+) => {
         cami_wrap_struct! {
@@ -85,6 +87,7 @@ macro_rules! cami_wrap_tuple {
         $(where $($left : $right),+)?
         ;
     };
+
     // The following prevents recursion on incorrect macro invocation
     (@
      $($tt:tt)+
@@ -92,6 +95,7 @@ macro_rules! cami_wrap_tuple {
         INCORRECT_MACRO_INVOCATION
         $($tt:tt)+
     };
+
     // NOT adding Clone/Debug/Eq/Ord/PartialEq/PartialOrd to $derived
     ([$($($derived:path),+)?]
      $($tt:tt)+
@@ -102,6 +106,7 @@ macro_rules! cami_wrap_tuple {
             $($tt)+
         }
     };
+
     // Default the derived trait impls
     ($($tt:tt)+) => {
         cami_wrap_tuple! {
@@ -117,8 +122,8 @@ macro_rules! cami_wrap_tuple {
 
 /// NOT a part of public API. Only for use by macro-generated code. Subject to change.
 ///
-/// The main benefit: With this, we don't need to capture the wrapped type in `c_partial_eq` &
-/// `c_ord when we apply those macros to a (`#[repr(transparent)]`) wrapper struct or tuple. See
+/// The main benefit: With this, we don't need to capture the wrapped type in `cami_partial_eq` &
+/// `cami_ord when we apply those macros to a (`#[repr(transparent)]`) wrapper struct or tuple. See
 /// also how we needed `$t_type:ty` (in commit `06cfc12`):
 /// <https://github.com/peter-kehl/camigo/blob/06cfc120812179e71a291a92b9c1034a792551eb/src/macros_c.rs#L135>.
 ///
@@ -127,7 +132,7 @@ macro_rules! cami_wrap_tuple {
 // This has to return a reference, hence "_ref" in its name.
 #[doc(hidden)]
 #[inline]
-pub fn always_equal_ref<T>(_instance: &T) -> &() {
+pub const fn always_equal_ref<T>(_instance: &T) -> &() {
     &()
 }
 
@@ -135,6 +140,7 @@ pub fn always_equal_ref<T>(_instance: &T) -> &() {
 macro_rules! cami_partial_eq {
     (
      $(<$($generic_left:tt $(: $bound:tt)?),+>)?
+     //@TODO instead of the following two, try :ty
      $struct_path:path
      $(>$($generic_right:tt),+<)?
 
@@ -143,11 +149,11 @@ macro_rules! cami_partial_eq {
        // Only for 1-field wrapper types (newtype):
        //
        // The name of the only (wrapped) field, or 0 if tuple, for example if the struct has been
-       // defined by `c_wrap!` or `c_wrap_tuple!`.` Otherwise see the second input pattern of this
-       // macro.
+       // defined by `cami_wrap_struct!` or `cami_wrap_tuple!`.` Otherwise see the second input
+       // pattern of this macro.
        => $t:tt
      }
-
+     // @TODO try move before the previous {} block
      $(where $($left:ty : $right:tt),+)?
      // The following two or three square pairs [] represent:
      // - local field(s),
