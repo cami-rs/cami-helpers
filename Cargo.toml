@@ -12,8 +12,6 @@ repository = "https://github.com/peter-kehl/camigo-helpers"
 
 # TODO MSRV
 
-exclude = ["subtests"]
-
 [features]
 # Keep features here sorted alphabetically
 alloc = []
