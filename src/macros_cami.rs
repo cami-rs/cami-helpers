@@ -10,9 +10,11 @@ macro_rules! cami_wrap_struct {
      ]
      $struct_vis:vis
      $struct_name:ident
-     $(<$($generic:tt $(: $bound:tt)?),+ // @TODO: N: const u8 = 1
-       >)?
-     $(where $($left:ty : $right:tt),+)?
+     // @TODO Apply generic_params + bounds to cami_wrap_tuple + cami_partial_eq + cami_ord.
+     $([ $($generic_params:tt)+ // N: const u8 = 1, T: Eq = ...
+       ])?
+     $(where { $($bounds:tt)+ } // T: Sized + Debug, [T; N]: ...
+      )?
      {
        $field_vis:vis
        $t:ident
@@ -23,8 +25,8 @@ macro_rules! cami_wrap_struct {
         /// from this crate.
         $(#[derive($($derived),+)])?
         #[repr(transparent)]
-        $struct_vis struct $struct_name $(<$($generic $(: $bound)?),+>)?
-        $(where $($left : $right),+)?
+        $struct_vis struct $struct_name $(<$($generic_params)+ >)?
+        $(where $($bounds)+)?
         {
             $field_vis $t: $T
         }
@@ -867,12 +869,14 @@ fn _deref(caw: &CaWrap) {
     let _ = caw.len();
 }
 
-cami_wrap_struct! { [Clone, Debug] _CaWrap3 <T> {t : T }}
-cami_wrap_struct! { [Clone, Debug] _CaWrap4 <T:Sized> {t : T }}
+cami_wrap_struct! { [Clone, Debug] _CaWrap3 [ T ] {t : T }}
+cami_wrap_struct! { [Clone, Debug] _CaWrap4 [T:Sized  ] {t : T }}
 cami_wrap_struct! {
     [Clone, Debug]
-    _CaWrap5 <T>
-    where T: 'static {
+    _CaWrap5 [ T ]
+    where {
+        T: 'static
+    } {
         t : T
     }
 }
