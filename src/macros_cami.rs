@@ -5,15 +5,18 @@ use core::ops::{Deref, DerefMut};
 #[macro_export]
 macro_rules! cami_wrap_struct {
     // An INTERNAL rule
-    (@[$($($derived:path),+)?]
+    (@
+     [$($($derived:path),+)?
+     ]
      $struct_vis:vis
      $struct_name:ident
-     $(<$($generic:tt $(: $bound:tt)?),+>)?
+     $(<$($generic:tt $(: $bound:tt)?),+ // @TODO: N: const u8 = 1
+       >)?
      $(where $($left:ty : $right:tt),+)?
      {
-     $field_vis:vis
-     $t:ident
-     : $T:ty
+       $field_vis:vis
+       $t:ident
+       : $T:ty
      }
     ) => {
         /// A zero cost (transparent) wrapper struct around a given type. For use with other macros
