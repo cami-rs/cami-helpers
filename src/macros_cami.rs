@@ -144,7 +144,10 @@ pub const fn always_equal_ref<T>(_instance: &T) -> &() {
 #[macro_export]
 macro_rules! cami_partial_eq {
     (
-     $(<$($generic_left:tt $(: $bound:tt)?),+>)?
+     $( (
+         $( $generic_left:tt )+
+        )
+     )?
      [ $( $struct_path_and_generic_right:tt
         )+
      ]
@@ -193,7 +196,8 @@ macro_rules! cami_partial_eq {
     )?
     ) => {
         $crate::cami_partial_eq_full_squares! {
-            $(<$($generic_left $(: $bound)?),+>)?
+            $( ( $( $generic_left )+
+               ))?
             [ $( $struct_path_and_generic_right )+
             ]
             { $locality
@@ -223,7 +227,10 @@ macro_rules! cami_partial_eq {
     };
 
     (
-     $(<$($generic_left:tt $(: $bound:tt)?),+>)?
+     $( (
+         $( $generic_left:tt )+
+        )
+     )?
      [ $( $struct_path_and_generic_right:tt
         )+
      ]
@@ -245,7 +252,8 @@ macro_rules! cami_partial_eq {
     )?
     ) => {
         $crate::cami_partial_eq_full_squares! {
-            $(<$($generic_left $(: $bound)?),+>)?
+            $( ( $( $generic_left )+
+               ))?
             [ $( $struct_path_and_generic_right )+
             ]
 
@@ -273,7 +281,11 @@ macro_rules! cami_partial_eq {
 
 #[macro_export]
 macro_rules! cami_partial_eq_full_squares {
-    ($(<$($generic_left:tt $(: $bound:tt)?),+>)?
+    (
+     $( (
+         $( $generic_left:tt )+
+        )
+     )?
      [ $( $struct_path_and_generic_right:tt
         )+
      ]
@@ -397,7 +409,7 @@ macro_rules! cami_partial_eq_full_squares {
     ) => {
         /* */
         // const _: () = { panic!( stringify!(
-        impl $(<$($generic_left $(: $bound)?)+>)?
+        impl $(< $( $generic_left )+ >)?
         camigo::CamiPartialEq for
         $( $struct_path_and_generic_right )+
         $(where $($left : $right),+)? {
