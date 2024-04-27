@@ -152,7 +152,7 @@ macro_rules! cami_partial_eq {
         )+
      ]
 
-     $(where [ $( $where:tt )* ]
+     $(where { $( $where:tt )* }
       )?
 
      // $locality is NOT an ident, so that we allow (const-time) expressions.
@@ -187,6 +187,7 @@ macro_rules! cami_partial_eq {
     [
         $( $local:tt )*
     ]
+    // @TODO Make optional:
     [
         $( $non_local:tt )*
     ]
@@ -201,7 +202,7 @@ macro_rules! cami_partial_eq {
                ))?
             [ $( $struct_path_and_generic_right )+
             ]
-            $(where [ $( $where )* ]
+            $(where { $( $where )* }
              )?
             { $locality
               => $t
@@ -236,7 +237,7 @@ macro_rules! cami_partial_eq {
      [ $( $struct_path_and_generic_right:tt
         )+
      ]
-     $(where [ $( $where:tt )* ]
+     $(where { $( $where:tt )* }
       )?
 
      { $locality: expr
@@ -258,7 +259,7 @@ macro_rules! cami_partial_eq {
                ))?
             [ $( $struct_path_and_generic_right )+
             ]
-            $( where [ $( $where )* ]
+            $( where { $( $where )* }
              )?
 
             { $locality
@@ -292,7 +293,7 @@ macro_rules! cami_partial_eq_full_squares {
      [ $( $struct_path_and_generic_right:tt
         )+
      ]
-     $(where [ $( $where:tt )* ]
+     $(where { $( $where:tt )* }
       )?
 
      { $locality: expr
