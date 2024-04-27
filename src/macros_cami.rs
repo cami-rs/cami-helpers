@@ -6,14 +6,15 @@ use core::ops::{Deref, DerefMut};
 macro_rules! cami_wrap_struct {
     // An INTERNAL rule
     (@
-     [$($($derived:path),+)?
+     [$( $($derived:path),+
+       )?
      ]
      $struct_vis:vis
      $struct_name:ident
-     // @TODO Apply generic_params + bounds to cami_wrap_tuple + cami_partial_eq + cami_ord.
+     // @TODO Apply generic_params + where to cami_partial_eq + cami_ord.
      $([ $($generic_params:tt)+ // N: const u8 = 1, T: Eq = ...
        ])?
-     $(where { $($bounds:tt)+ } // T: Sized + Debug, [T; N]: ...
+     $( where { $( $where:tt )* } // T: Sized + Debug, [T; N]: ...
       )?
      {
        $field_vis:vis
@@ -25,8 +26,10 @@ macro_rules! cami_wrap_struct {
         /// from this crate.
         $(#[derive($($derived),+)])?
         #[repr(transparent)]
-        $struct_vis struct $struct_name $(<$($generic_params)+ >)?
-        $(where $($bounds)+)?
+        $struct_vis struct $struct_name
+        $(< $( $generic_params )+ >
+         )?
+        $( where $( $where )* )?
         {
             $field_vis $t: $T
         }
@@ -71,25 +74,34 @@ macro_rules! cami_wrap_struct {
 macro_rules! cami_wrap_tuple {
     // An INTERNAL rule
     (@
-     [$($($derived:path),+)?]
+     [ $( $($derived:path),+
+        )?
+     ]
      $struct_vis:vis
      $struct_name:ident
-     $(<$($generic:tt $(: $bound:tt)?),+>)?
+     $([ $($generic_params:tt)+ // N: const u8 = 1, T: Eq = ...
+       ])?
      (
      $field_vis:vis
      $T:ty
      )
-     $(where $($left:ty : $right:tt),+)?
+     /// The curly braces after "where" are unnecessary here. But we do require them, so it's
+     /// consistent with cami_wrap_struct.
+     $( where { $( $where:tt )* } // T: Sized + Debug, [T; N]: ...
+     )?
     ) => {
         /// A zero cost (transparent) wrapper struct around a given type. For use with other macros
         /// from this crate.
-        $(#[derive($($derived),+)])?
+        $( #[derive( $( $derived),+ )]
+         )?
         #[repr(transparent)]
-        $struct_vis struct $struct_name $(<$($generic $(: $bound)?),+>)?
+        $struct_vis struct $struct_name
+        $(< $( $generic_params )+ >
+         )?
         (
             $field_vis $T
         )
-        $(where $($left : $right),+)?
+        $( where $( $where )* )?
         ;
     };
 
