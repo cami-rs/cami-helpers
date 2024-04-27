@@ -152,6 +152,9 @@ macro_rules! cami_partial_eq {
         )+
      ]
 
+     $(where [ $( $where:tt )* ]
+      )?
+
      // $locality is NOT an ident, so that we allow (const-time) expressions.
      { $locality: expr
        // Only for 1-field wrapper types (newtype):
@@ -161,8 +164,6 @@ macro_rules! cami_partial_eq {
        // pattern of this macro.
        => $t:tt
      }
-     // @TODO try move before the previous {} block
-     $(where $($left:ty : $right:tt),+)?
      // The following two or three square pairs [] represent:
      // - local field(s),
      // - non-local field(s), and
@@ -200,16 +201,17 @@ macro_rules! cami_partial_eq {
                ))?
             [ $( $struct_path_and_generic_right )+
             ]
+            $(where [ $( $where )* ]
+             )?
             { $locality
               => $t
             }
 
-            $(where $($left : $right),+)?
             [
-                // Injecting a const `true`-generating closure. Without this, handling empty square
-                // pair [] was extremely difficult because of "ambiguity: multiple successful
-                // parses" (because we need a zero-or-more repetitive block that can match empty
-                // content).
+                // Injecting a constant-generating closure, which, composed by this macro, yields
+                // true. Without this, handling empty square pair [] was extremely difficult because
+                // of "ambiguity: multiple successful parses" (because we need a zero-or-more
+                // repetitive block that can match empty content).
                 {$crate::always_equal_ref},
                 $( $local )*
             ]
@@ -234,11 +236,11 @@ macro_rules! cami_partial_eq {
      [ $( $struct_path_and_generic_right:tt
         )+
      ]
+     $(where [ $( $where:tt )* ]
+      )?
 
      { $locality: expr
      }
-
-     $(where $($left:ty : $right:tt),+)?
     [
         $( $local:tt )*
     ]
@@ -256,11 +258,12 @@ macro_rules! cami_partial_eq {
                ))?
             [ $( $struct_path_and_generic_right )+
             ]
+            $( where [ $( $where )* ]
+             )?
 
             { $locality
             }
 
-            $(where $($left : $right),+)?
             [
                 {$crate::always_equal_ref},
                 $( $local )*
@@ -289,12 +292,13 @@ macro_rules! cami_partial_eq_full_squares {
      [ $( $struct_path_and_generic_right:tt
         )+
      ]
+     $(where [ $( $where:tt )* ]
+      )?
 
      { $locality: expr
        $( => $t:tt )?
      }
 
-     $(where $($left:ty : $right:tt),+)?
      [
         $(
            $(($local_eq_closure:expr)
@@ -412,7 +416,8 @@ macro_rules! cami_partial_eq_full_squares {
         impl $(< $( $generic_left )+ >)?
         camigo::CamiPartialEq for
         $( $struct_path_and_generic_right )+
-        $(where $($left : $right),+)? {
+        $(where $( $where )* )?
+        {
             const LOCALITY: $crate::Locality = $locality;
 
             fn eq_local(&self, other: &Self) -> bool {
