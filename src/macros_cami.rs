@@ -145,9 +145,9 @@ pub const fn always_equal_ref<T>(_instance: &T) -> &() {
 macro_rules! cami_partial_eq {
     (
      $(<$($generic_left:tt $(: $bound:tt)?),+>)?
-     //@TODO instead of the following two, try :ty
-     $struct_path:path
-     $(>$($generic_right:tt),+<)?
+     [ $( $struct_path_and_generic_right:tt
+        )+
+     ]
 
      // $locality is NOT an ident, so that we allow (const-time) expressions.
      { $locality: expr
@@ -194,9 +194,8 @@ macro_rules! cami_partial_eq {
     ) => {
         $crate::cami_partial_eq_full_squares! {
             $(<$($generic_left $(: $bound)?),+>)?
-            $struct_path
-            $(>$($generic_right),+<)?
-
+            [ $( $struct_path_and_generic_right )+
+            ]
             { $locality
               => $t
             }
@@ -225,8 +224,9 @@ macro_rules! cami_partial_eq {
 
     (
      $(<$($generic_left:tt $(: $bound:tt)?),+>)?
-     $struct_path:path
-     $(>$($generic_right:tt),+<)?
+     [ $( $struct_path_and_generic_right:tt
+        )+
+     ]
 
      { $locality: expr
      }
@@ -246,8 +246,8 @@ macro_rules! cami_partial_eq {
     ) => {
         $crate::cami_partial_eq_full_squares! {
             $(<$($generic_left $(: $bound)?),+>)?
-            $struct_path
-            $(>$($generic_right),+<)?
+            [ $( $struct_path_and_generic_right )+
+            ]
 
             { $locality
             }
@@ -274,8 +274,9 @@ macro_rules! cami_partial_eq {
 #[macro_export]
 macro_rules! cami_partial_eq_full_squares {
     ($(<$($generic_left:tt $(: $bound:tt)?),+>)?
-     $struct_path:path
-     $(>$($generic_right:tt),+<)?
+     [ $( $struct_path_and_generic_right:tt
+        )+
+     ]
 
      { $locality: expr
        $( => $t:tt )?
@@ -394,8 +395,11 @@ macro_rules! cami_partial_eq_full_squares {
      ]
      )?
     ) => {
+        /* */
+        // const _: () = { panic!( stringify!(
         impl $(<$($generic_left $(: $bound)?)+>)?
-        camigo::CamiPartialEq for $struct_path $(<$($generic_right),+>)?
+        camigo::CamiPartialEq for
+        $( $struct_path_and_generic_right )+
         $(where $($left : $right),+)? {
             const LOCALITY: $crate::Locality = $locality;
 
@@ -643,6 +647,8 @@ macro_rules! cami_partial_eq_full_squares {
                 )?
             }
         }
+        /* */
+        // )) };
     };
 }
 
