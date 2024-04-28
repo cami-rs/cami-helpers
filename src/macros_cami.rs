@@ -12,7 +12,7 @@ macro_rules! cami_wrap_struct {
      $struct_vis:vis
      $struct_name:ident
      // @TODO Apply generic_params + where to cami_partial_eq + cami_ord.
-     $([ $($generic_params:tt)+ // N: const u8 = 1, T: Eq = ...
+     $([ $( $generic_params:tt )+ // N: const u8 = 1, T: Eq = ...
        ])?
      $( where { $( $where:tt )* } // T: Sized + Debug, [T; N]: ...
       )?
@@ -24,7 +24,8 @@ macro_rules! cami_wrap_struct {
     ) => {
         /// A zero cost (transparent) wrapper struct around a given type. For use with other macros
         /// from this crate.
-        $(#[derive($($derived),+)])?
+        $(#[derive( $( $derived ),+ )]
+         )?
         #[repr(transparent)]
         $struct_vis struct $struct_name
         $(< $( $generic_params )+ >
@@ -79,7 +80,7 @@ macro_rules! cami_wrap_tuple {
      ]
      $struct_vis:vis
      $struct_name:ident
-     $([ $($generic_params:tt)+ // N: const u8 = 1, T: Eq = ...
+     $([ $( $generic_params:tt )+ // N: const u8 = 1, T: Eq = ...
        ])?
      (
      $field_vis:vis

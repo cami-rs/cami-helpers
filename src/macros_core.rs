@@ -20,25 +20,32 @@
 macro_rules! core_wrap_tuple {
     // An INTERNAL rule
     (@
-     [$($($derived:path),+)?]
+     [$( $($derived:path),+
+       )?
+     ]
      $struct_vis:vis
      $struct_name:ident
-     $(<$($generic:tt $(: $bound:tt)?),+>)?
+     $([ $( $generic_params:tt )+ // N: const u8 = 1, T: Eq = ...
+       ])?
      (
      $field_vis:vis
      $T:ty
      )
-     $(where $($left:ty : $right:tt),+)?
+     $( where { $( $where:tt )* } // T: Sized + Debug, [T; N]: ...
+      )?
     ) => {
         /// A zero cost (transparent) wrapper struct around a given type. For use with other macros
         /// from this crate.
-        $(#[derive($($derived),+)])?
+        $(#[derive( $( $derived ),+ )]
+         )?
         #[repr(transparent)]
-        $struct_vis struct $struct_name $(<$($generic $(: $bound)?),+>)?
+        $struct_vis struct $struct_name
+        $(< $( $generic_params )+ >
+         )?
         (
             $field_vis $T
         )
-        $(where $($left : $right),+)?
+        $( where $( $where )* )?
         ;
     };
 
@@ -78,21 +85,20 @@ macro_rules! core_wrap_tuple {
 /// There is no corresponding macro for [core::cmp::Eq]. Implement it if you see fit.
 #[macro_export]
 macro_rules! core_partial_eq {
-    ($wrapper_name:ident <$generics:tt> $T:ty) => {
+    ($wrapper_name:ident <$generics:tt> $T:ty
+    ) => {
         impl<$generics> ::core::cmp::PartialEq for $wrapper_name<$T>
         where
             $T: camigo::CamiPartialEq,
         {
             #[inline]
             fn eq(&self, other: &Self) -> bool {
-                (!T::LOCALITY.has_local() || self.t.eq_local(&other.t))
-                    && (!T::LOCALITY.has_non_local() || self.t.eq_non_local(&other.t))
+                self.t.eq_full(&other.t)
             }
 
             #[inline]
             fn ne(&self, other: &Self) -> bool {
-                T::LOCALITY.has_local() && !self.t.eq_local(&other.t)
-                    || T::LOCALITY.has_non_local() && !self.t.eq_non_local(&other.t)
+                !self.t.eq_full(&other.t)
             }
         }
     };
