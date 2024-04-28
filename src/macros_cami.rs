@@ -114,8 +114,25 @@ macro_rules! cami_wrap_tuple {
         $($tt:tt)+
     };
 
+    // ADDING Clone/Debug/Eq/Ord/PartialEq/PartialOrd to $derived
+    ([+ $($($derived:path),+)?
+     ]
+     $($tt:tt)+
+    ) => {
+        cami_wrap_tuple! {
+            @
+            [
+                ::core::clone::Clone, ::core::fmt::Debug, ::core::cmp::Eq, ::core::cmp::Ord,
+                ::core::cmp::PartialEq, ::core::cmp::PartialOrd,
+                $($($derived),+)?
+            ]
+            $($tt)+
+        }
+    };
+
     // NOT adding Clone/Debug/Eq/Ord/PartialEq/PartialOrd to $derived
-    ([$($($derived:path),+)?]
+    ([$($($derived:path),+)?
+     ]
      $($tt:tt)+
     ) => {
         cami_wrap_tuple! {

@@ -10,6 +10,8 @@
 ///
 /// These implementations are useful, and for many data types it may speed up searches etc.
 /// (anything based on comparison).
+/// 
+/// For tuple structs (NOT for anonymous/auto-generated tuple types).
 ///
 /// [::core::cmp::PartialEq] is implemented NOT by forwarding to [::core::cmp::PartialEq]'s
 /// `eq` and `ne` of `T`, but by forwarding to[camigo::CamiOrd]'s `cmp_local`] and
@@ -55,6 +57,21 @@ macro_rules! core_wrap_tuple {
     ) => {
         INCORRECT_MACRO_INVOCATION
         $($tt:tt)+
+    };
+
+    // ADDING Clone/Debug to $derived
+    ([+ $($($derived:path),+)?
+     ]
+     $($tt:tt)+
+    ) => {
+        core_wrap_tuple! {
+            @
+            [
+                ::core::clone::Clone, ::core::fmt::Debug,
+                $($($derived),+)?
+            ]
+            $($tt)+
+        }
     };
 
     // NOT adding Clone/Debug to $derived
