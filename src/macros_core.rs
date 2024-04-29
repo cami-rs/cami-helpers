@@ -10,7 +10,7 @@
 ///
 /// These implementations are useful, and for many data types it may speed up searches etc.
 /// (anything based on comparison).
-/// 
+///
 /// For tuple structs (NOT for anonymous/auto-generated tuple types).
 ///
 /// [::core::cmp::PartialEq] is implemented NOT by forwarding to [::core::cmp::PartialEq]'s

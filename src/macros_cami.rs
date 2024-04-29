@@ -679,6 +679,10 @@ macro_rules! cami_ord {
      ]
     ) => {
         impl $(<$($generic_left $(: $bound)?)+>)?
+        camigo::CamiPartialOrd for $struct_path $(<$($generic_right),+>)?
+        $(where $($left : $right),+)? {}
+
+        impl $(<$($generic_left $(: $bound)?)+>)?
         camigo::CamiOrd for $struct_path $(<$($generic_right),+>)?
         $(where $($left : $right),+)? {
             fn cmp_local(&self, other: &Self) -> ::core::cmp::Ordering {
@@ -791,6 +795,8 @@ macro_rules! pure_local_c_partial_eq {
 #[macro_export]
 macro_rules! pure_local_c_ord {
     ($T:ident) => {
+        impl camigo::CamiPartialOrd for $T {}
+
         impl camigo::CamiOrd for $T {
             fn cmp_local(&self, other: &Self) -> core::cmp::Ordering {
                 self.cmp(other)
