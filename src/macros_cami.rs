@@ -1,9 +1,5 @@
-#[cfg(feature = "unsafe")]
-use core::ops::DerefPure;
-use core::ops::{Deref, DerefMut};
-
 #[macro_export]
-macro_rules! cami_wrap_struct {
+macro_rules! cami_impl_struct {
     // An INTERNAL rule
     (@
      [$( $($derived:path),+
@@ -48,7 +44,7 @@ macro_rules! cami_wrap_struct {
     ([$($($derived:path),+)?]
      $($tt:tt)+
     ) => {
-        cami_wrap_struct! {
+        cami_impl_struct! {
             @
             [$($($derived),+)?]
             $($tt)+
@@ -57,7 +53,7 @@ macro_rules! cami_wrap_struct {
 
     // Default the derived trait impls
     ($($tt:tt)+) => {
-        cami_wrap_struct! {
+        cami_impl_struct! {
             @
             [
             ::core::clone::Clone, ::core::fmt::Debug, ::core::cmp::Eq, ::core::cmp::Ord,
@@ -70,9 +66,9 @@ macro_rules! cami_wrap_struct {
 
 /// Like standard tuples, this accepts any (optional) "where" bound(s) AFTER the definition of the
 /// tuple-wrapped fields (AFTER `(wrapped-type)` or (pub wripped-type)...). So that is different to
-/// [cami_wrap_struct].
+/// [cami_impl_struct].
 #[macro_export]
-macro_rules! cami_wrap_tuple {
+macro_rules! cami_impl {
     // An INTERNAL rule
     (@
      [ $( $($derived:path),+
@@ -87,7 +83,7 @@ macro_rules! cami_wrap_tuple {
      $T:ty
      )
      /// The curly braces after "where" are unnecessary here. But we do require them, so it's
-     /// consistent with cami_wrap_struct.
+     /// consistent with cami_impl_struct.
      $( where { $( $where:tt )* } // T: Sized + Debug, [T; N]: ...
      )?
     ) => {
@@ -119,7 +115,7 @@ macro_rules! cami_wrap_tuple {
      ]
      $($tt:tt)+
     ) => {
-        cami_wrap_tuple! {
+        cami_impl! {
             @
             [
                 ::core::clone::Clone, ::core::fmt::Debug, ::core::cmp::Eq, ::core::cmp::Ord,
@@ -135,7 +131,7 @@ macro_rules! cami_wrap_tuple {
      ]
      $($tt:tt)+
     ) => {
-        cami_wrap_tuple! {
+        cami_impl! {
             @
             [$($($derived),+)?]
             $($tt)+
@@ -144,7 +140,7 @@ macro_rules! cami_wrap_tuple {
 
     // Default the derived trait impls
     ($($tt:tt)+) => {
-        cami_wrap_tuple! {
+        cami_impl! {
             @
             [
             ::core::clone::Clone, ::core::fmt::Debug, ::core::cmp::Eq, ::core::cmp::Ord,
@@ -190,7 +186,7 @@ macro_rules! cami_partial_eq {
        // Only for 1-field wrapper types (newtype):
        //
        // The name of the only (wrapped) field, or 0 if tuple, for example if the struct has been
-       // defined by `cami_wrap_struct!` or `cami_wrap_tuple!`.` Otherwise see the second input
+       // defined by `cami_impl_struct!` or `cami_impl!`.` Otherwise see the second input
        // pattern of this macro.
        => $t:tt
      }
@@ -878,6 +874,10 @@ macro_rules! pure_local_c_ord {
     };
 }
 
+/*
+#[cfg(feature = "unsafe")]
+use core::ops::DerefPure;
+use core::ops::{Deref, DerefMut};
 // @TODO
 impl From<CaWrap> for &str {
     fn from(_value: CaWrap) -> Self {
@@ -887,12 +887,6 @@ impl From<CaWrap> for &str {
 impl From<&str> for CaWrap {
     fn from(_value: &str) -> Self {
         panic!()
-    }
-}
-
-cami_wrap_struct! {
-    pub CaWrap {
-        t : u8
     }
 }
 
@@ -910,28 +904,4 @@ impl DerefMut for CaWrap {
 }
 #[cfg(feature = "unsafe")]
 unsafe impl DerefPure for CaWrap {}
-
-fn _into() {
-    let _caw: CaWrap = "".into();
-    let _caw: CaWrap = <&str>::into("");
-}
-fn _from() {
-    let _caw = CaWrap::from("");
-}
-
-fn _deref(caw: &CaWrap) {
-    let _ = caw.len();
-}
-
-cami_wrap_struct! { [Clone, Debug] _CaWrap3 [ T ] {t : T }}
-cami_wrap_struct! { [Clone, Debug] _CaWrap4 [T:Sized  ] {t : T }}
-cami_wrap_struct! {
-    [Clone, Debug]
-    _CaWrap5 [ T ]
-    where {
-        T: 'static
-    } {
-        t : T
-    }
-}
-cami_wrap_struct! { pub CaWrapPub {pub t : u8}}
+*/
