@@ -21,4 +21,6 @@ alloc = []
 # Future-proofing if we need to handle types that use std.
 std = ["alloc"]
 
+# default = ["alloc"]
+
 [dependencies]
