@@ -284,7 +284,7 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                 $(
                     $(&& {
-                        let getter = $camigo_get_closure;
+                        let getter: fn(&Self) -> _ = $camigo_get_closure;
                         getter(self).eq_local( getter(other) )
                       }
                      )?
@@ -351,7 +351,7 @@ macro_rules! cami_partial_eq_full_squares {
                 true
                 $(
                     $(&& {
-                        let getter = $non_local_get_closure;
+                        let getter: fn(&Self) -> _ = $non_local_get_closure;
                         getter(self) == getter(other)
                       }
                      )?
@@ -411,7 +411,7 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                 $(
                     $(&& {
-                        let getter = $camigo_get_closure;
+                        let getter: fn(&Self) -> _ = $camigo_get_closure;
                         getter(self).eq_non_local( getter(other) )
                       }
                      )?
