@@ -28,8 +28,6 @@ mod locality;
 #[macro_use]
 mod macros_cami;
 pub use macros_cami::always_equal_ref;
-#[macro_use]
-mod macros_core;
 pub mod prelude;
 
 #[cfg(feature = "alloc")]
