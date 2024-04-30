@@ -106,7 +106,13 @@ macro_rules! cami_partial_eq_full_squares {
                $( (
                    // This does NOT match "expressions" passed to functions. It's here ONLY to
                    // capture a pair of PARENS with NO parameters within.
-                   $( $local_dotted_then_within_parens:tt )?
+                   //
+                   // Why NO parameters? Because we don't parse/handle this, so we can't the values
+                   // of parameters. If we transcribed them in this macro, they would get evaluated
+                   // twice. Possibly moving non-Copy values in - so the 2nd replica could fail to
+                   // compile. Even worse, the expressions could have side effects, which could be
+                   // duplicated.
+                   $( to-match-optional-outer-parens: $local_dotted_then_within_parens:vis )?
                   )
                )?
             )+
@@ -117,7 +123,7 @@ macro_rules! cami_partial_eq_full_squares {
                $( (
                    // This does NOT match "expressions" passed to functions. It's here ONLY to
                    // capture a pair of PARENS with NO parameters within.
-                   $( $local_ident_then_within_parens:tt )?
+                   $( to-match-optional-outer-parens: $local_ident_then_within_parens:vis )?
                   )
                )?
                // Same as "local_dotted" part above.
@@ -126,7 +132,7 @@ macro_rules! cami_partial_eq_full_squares {
                   $( (
                        // This does NOT match "expressions" passed to functions. It's here ONLY to
                        // capture a pair of PARENS with NO parameters within.
-                       $( $local_ident_then_dotted_then_within_parens:tt )?
+                       $( to-match-optional-outer-parens: $local_ident_then_dotted_then_within_parens:vis )?
                      )
                   )?
                )*
@@ -145,7 +151,7 @@ macro_rules! cami_partial_eq_full_squares {
             $( .
                $non_local_dotted:tt
                $( (
-                   $( $non_local_dotted_then_within_parens:tt )?
+                   $( to-match-optional-outer-parens: $non_local_dotted_then_within_parens:vis )?
                   )
                )?
             )+
@@ -154,13 +160,13 @@ macro_rules! cami_partial_eq_full_squares {
            $(
                $non_local_ident:ident
                $( (
-                   $( $non_local_ident_then_within_parens:tt )?
+                   $( to-match-optional-outer-parens: $non_local_ident_then_within_parens:vis )?
                   )
                )?
                $( .
                   $( $non_local_ident_then_dotted:tt )?
                   $( (
-                       $( $non_local_ident_then_dotted_then_within_parens:tt )?
+                       $( to-match-optional-outer-parens: $non_local_ident_then_dotted_then_within_parens:vis )?
                      )
                   )?
                )*
@@ -177,7 +183,7 @@ macro_rules! cami_partial_eq_full_squares {
             $( .
                $camigo_dotted:tt
                $( (
-                   $( $camigo_dotted_then_within_parens:tt )?
+                   $( to-match-optional-outer-parens: $camigo_dotted_then_within_parens:vis )?
                   )
                )?
             )+
@@ -186,13 +192,13 @@ macro_rules! cami_partial_eq_full_squares {
            $(
                $camigo_ident:ident
                $( (
-                   $( $camigo_ident_then_within_parens:tt )?
+                   $( to-match-optional-outer-parens: $camigo_ident_then_within_parens:vis )?
                   )
                )?
                $( .
                   $( $camigo_ident_then_dotted:tt )?
                   $( (
-                       $( $camigo_ident_then_dotted_then_within_parens:tt )?
+                       $( to-match-optional-outer-parens: $camigo_ident_then_dotted_then_within_parens:vis )?
                      )
                   )?
                )*
