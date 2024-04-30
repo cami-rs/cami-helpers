@@ -1,16 +1,18 @@
 /// NOT a part of public API. Only for use by macro-generated code. Subject to change.
 ///
-/// The main benefit: With this, we don't need to capture the wrapped type in `cami_partial_eq` &
-/// `cami_ord when we apply those macros to a (`#[repr(transparent)]`) wrapper struct or tuple. See
-/// also how we needed `$t_type:ty` (in commit `06cfc12`):
+/// The main benefit: With this, we don't need to capture the wrapped/forwarded type in
+/// [cami_partial_eq] & [cami_ord] when we apply those macros to a (`#[repr(transparent)]`) wrapper
+/// struct or tuple. See also how we needed `$t_type:ty` (in commit `06cfc12`):
 /// <https://github.com/peter-kehl/camigo/blob/06cfc120812179e71a291a92b9c1034a792551eb/src/macros_c.rs#L135>.
 ///
 /// A smaller benefit: Less duplication in `c_partial_eq` & `c_ord` macros: no need for an
 /// (anonymous) filler closure.
-// This has to return a reference, hence "_ref" in its name.
+///
+/// This has to return a reference (so it can feed to comparison operators in general, even if the
+/// wrapped/forwarded field is not [Copy]), hence "_ref" in its name.
 #[doc(hidden)]
 #[inline]
-pub const fn always_equal_ref<T>(_instance: &T) -> &() {
+pub const fn always_equal_ref<T>(_: &T) -> &() {
     &()
 }
 
@@ -115,7 +117,7 @@ macro_rules! cami_partial_eq_full_squares {
                $( (
                    // This does NOT match "expressions" passed to functions. It's here ONLY to
                    // capture a pair of PARENS with NO parameters within.
-                   $( $local_ident_then_within_parents:tt )?
+                   $( $local_ident_then_within_parens:tt )?
                   )
                )?
                // Same as "local_dotted" part above.
@@ -152,7 +154,7 @@ macro_rules! cami_partial_eq_full_squares {
            $(
                $non_local_ident:ident
                $( (
-                   $( $non_local_ident_then_within_parents:tt )?
+                   $( $non_local_ident_then_within_parens:tt )?
                   )
                )?
                $( .
@@ -241,7 +243,7 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& self  .
                                $local_ident
                                $( (
-                                    $( $local_ident_then_within_parents )?
+                                    $( $local_ident_then_within_parens )?
                                   )
                                )?
                                $( .
@@ -255,7 +257,7 @@ macro_rules! cami_partial_eq_full_squares {
                          other  .
                                $local_ident
                                $( (
-                                    $( $local_ident_then_within_parents )?
+                                    $( $local_ident_then_within_parens )?
                                   )
                                )?
                                $( .
@@ -359,7 +361,7 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& self  .
                                $non_local_ident
                                $( (
-                                    $( $non_local_ident_then_within_parents )?
+                                    $( $non_local_ident_then_within_parens )?
                                   )
                                )?
                                $( .
@@ -373,7 +375,7 @@ macro_rules! cami_partial_eq_full_squares {
                          other  .
                                $non_local_ident
                                $( (
-                                    $( $non_local_ident_then_within_parents )?
+                                    $( $non_local_ident_then_within_parens )?
                                   )
                                )?
                                $( .
