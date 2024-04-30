@@ -17,50 +17,21 @@ pub const fn always_equal_ref<T>(_instance: &T) -> &() {
 #[macro_export]
 macro_rules! cami_partial_eq {
     (
-     $( (
-         $( $generic_left:tt )+
-        )
+     $( <[
+            $( $generic_left:tt )+
+         ]>
      )?
-     [ $( $struct_path_and_generic_right:tt
+     { $( $struct_path_and_generic_right:tt
         )+
-     ]
-
+     }
      $(where { $( $where:tt )* }
       )?
 
-     // $locality is NOT an ident, so that we allow (const-time) expressions.
-     { $locality: expr
-       // Only for 1-field wrapper types (newtype):
-       //
-       // The name of the only (wrapped) field, or 0 if tuple, for example if the struct has been
-       // defined by `cami_impl_struct!` or `cami_impl!`.` Otherwise see the second input
-       // pattern of this macro.
-       => $t:tt
-     }
-     // The following two or three square pairs [] represent:
-     // - local field(s),
-     // - non-local field(s), and
-     // - optional: field(s) that themselves implement [camigo::CamiPartialEq] ("camigo field(s)").
-     //
-     // Any of those two or three kinds of fields may be "deep fields".
-     //
-     // Within each square pair [], repeat any of the four parts (or three parts in case of "camigo"
-     // field(s)"):
-     // - `..._ident` for non-tuple structs, or
-     // - `..._idx` for tuples, or
-     // - (` ..._eq_closure`) for an equality closure - except for "camigo field(s)". Each closure
-     //   must receive two parameters, for example `this` and `other`. Both parameters' type is a
-     //   reference to the wrapped type (if you provided `$t`), or `Self` (if no `$t`). The closure
-     //   compares the same chosen field in both references, and returns their equality (as `bool`).
-     // - {` ..._get_closure`} for an accessor closure. Each closure must receive one parameter, for
-     //   example `instance` or `obj`. That parameter's type is a reference to the wrapped type (if
-     //   you provided `$t`), or `Self` (if no `$t`). The closure returns (a reference, or a copy
-     //   of) a chosen field (or a value based on that field). Ideally return a reference to the
-     //   field; beware of returning value of a (silent) `Copy` of large types.
+     ( $locality: expr
+     )
     [
         $( $local:tt )*
     ]
-    // @TODO Make optional:
     [
         $( $non_local:tt )*
     ]
@@ -71,72 +42,16 @@ macro_rules! cami_partial_eq {
     )?
     ) => {
         $crate::cami_partial_eq_full_squares! {
-            $( ( $( $generic_left )+
-               ))?
-            [ $( $struct_path_and_generic_right )+
-            ]
-            $(where { $( $where )* }
+            $( <[ $( $generic_left )+
+                ]>
              )?
-            { $locality
-              => $t
+            { $( $struct_path_and_generic_right )+
             }
-
-            [
-                // Injecting a constant-generating closure, which, composed by this macro, yields
-                // true. Without this, handling empty square pair [] was extremely difficult because
-                // of "ambiguity: multiple successful parses" (because we need a zero-or-more
-                // repetitive block that can match empty content).
-                {$crate::always_equal_ref},
-                $( $local )*
-            ]
-            [
-                {$crate::always_equal_ref},
-                $( $non_local )*
-            ]
-            $(
-            [
-                {$crate::always_equal_ref},
-                $( $camigo )*
-            ]
-            )?
-        }
-    };
-
-    (
-     $( (
-         $( $generic_left:tt )+
-        )
-     )?
-     [ $( $struct_path_and_generic_right:tt
-        )+
-     ]
-     $(where { $( $where:tt )* }
-      )?
-
-     { $locality: expr
-     }
-    [
-        $( $local:tt )*
-    ]
-    [
-        $( $non_local:tt )*
-    ]
-    $(
-    [
-        $( $camigo:tt )*
-    ]
-    )?
-    ) => {
-        $crate::cami_partial_eq_full_squares! {
-            $( ( $( $generic_left )+
-               ))?
-            [ $( $struct_path_and_generic_right )+
-            ]
             $( where { $( $where )* }
              )?
 
-            { $locality
-            }
+            ( $locality
+            )
 
             [
                 {$crate::always_equal_ref},
@@ -159,19 +74,18 @@ macro_rules! cami_partial_eq {
 #[macro_export]
 macro_rules! cami_partial_eq_full_squares {
     (
-     $( (
-         $( $generic_left:tt )+
-        )
+     $( <[
+            $( $generic_left:tt )+
+         ]>
      )?
-     [ $( $struct_path_and_generic_right:tt
+     { $( $struct_path_and_generic_right:tt
         )+
-     ]
+     }
      $(where { $( $where:tt )* }
       )?
 
-     { $locality: expr
-       $( => $t:tt )?
-     }
+     ( $locality: expr
+     )
 
      [
         $(
@@ -296,22 +210,18 @@ macro_rules! cami_partial_eq_full_squares {
 
             fn eq_local(&self, other: &Self) -> bool {
                 Self::LOCALITY.debug_reachable_for_local();
-                let this = self;
-                $( let this = &this.$t;
-                   let other = &other.$t;
-                )?
                 true
                 $(
-                    $(&& $local_eq_closure(&this, &other)
+                    $(&& $local_eq_closure(&self, &other)
                      )?
 
                     $(&& {
                         let getter = $local_get_closure;
-                        getter(this) == getter(other)
+                        getter(self) == getter(other)
                       }
                      )?
 
-                    $(&& this  $( .
+                    $(&& self  $( .
                                   $local_dotted
                                   $( (
                                        $( $local_dotted_then_within_parens )?
@@ -328,7 +238,7 @@ macro_rules! cami_partial_eq_full_squares {
                                 )+
                     )?
 
-                    $(&& this  .
+                    $(&& self  .
                                $local_ident
                                $( (
                                     $( $local_ident_then_within_parents )?
@@ -361,11 +271,11 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                     $(&& {
                         let getter = $camigo_get_closure;
-                        getter(this).eq_local( getter(other) )
+                        getter(self).eq_local( getter(other) )
                       }
                      )?
 
-                    $(&& this  $( .
+                    $(&& self  $( .
                                   $camigo_dotted
                                   $( (
                                        $( $camigo_dotted_then_within_parens )?
@@ -383,7 +293,7 @@ macro_rules! cami_partial_eq_full_squares {
                         )
                     )?
 
-                    $(&& this  .
+                    $(&& self  .
                                $camigo_ident
                                $( (
                                     $( $camigo_ident_then_within_parens )?
@@ -418,22 +328,18 @@ macro_rules! cami_partial_eq_full_squares {
 
             fn eq_non_local(&self, other: &Self) -> bool {
                 Self::LOCALITY.debug_reachable_for_non_local();
-                let this = self;
-                $( let this = &this.$t;
-                   let other = &other.$t;
-                )?
                 true
                 $(
-                    $(&& $non_local_eq_closure(&this, &other)
+                    $(&& $non_local_eq_closure(&self, &other)
                      )?
 
                     $(&& {
                         let getter = $non_local_get_closure;
-                        getter(this) == getter(other)
+                        getter(self) == getter(other)
                       }
                      )?
 
-                    $(&& this  $( .
+                    $(&& self  $( .
                                   $non_local_dotted
                                   $( (
                                        $( $non_local_dotted_then_within_parens )?
@@ -450,7 +356,7 @@ macro_rules! cami_partial_eq_full_squares {
                                 )+
                     )?
 
-                    $(&& this  .
+                    $(&& self  .
                                $non_local_ident
                                $( (
                                     $( $non_local_ident_then_within_parents )?
@@ -483,11 +389,11 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                     $(&& {
                         let getter = $camigo_get_closure;
-                        getter(this).eq_non_local( getter(other) )
+                        getter(self).eq_non_local( getter(other) )
                       }
                      )?
 
-                    $(&& this  $( .
+                    $(&& self  $( .
                                   $camigo_dotted
                                   $( (
                                        $( $camigo_dotted_then_within_parens )?
@@ -505,7 +411,7 @@ macro_rules! cami_partial_eq_full_squares {
                         )
                     )?
 
-                    $(&& this  .
+                    $(&& self  .
                                $camigo_ident
                                $( (
                                     $( $camigo_ident_then_within_parens )?
@@ -726,35 +632,3 @@ macro_rules! pure_local_c_ord {
         }
     };
 }
-
-/*
-#[cfg(feature = "unsafe")]
-use core::ops::DerefPure;
-use core::ops::{Deref, DerefMut};
-// @TODO
-impl From<CaWrap> for &str {
-    fn from(_value: CaWrap) -> Self {
-        panic!()
-    }
-}
-impl From<&str> for CaWrap {
-    fn from(_value: &str) -> Self {
-        panic!()
-    }
-}
-
-// @TODO
-impl Deref for CaWrap {
-    type Target = str;
-    fn deref(&self) -> &Self::Target {
-        panic!()
-    }
-}
-impl DerefMut for CaWrap {
-    fn deref_mut(&mut self) -> &mut Self::Target {
-        panic!()
-    }
-}
-#[cfg(feature = "unsafe")]
-unsafe impl DerefPure for CaWrap {}
-*/
