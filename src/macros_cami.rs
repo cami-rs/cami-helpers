@@ -277,7 +277,7 @@ macro_rules! cami_partial_eq_full_squares {
                $( (
                    // This does NOT match "expressions" passed to functions. It's here ONLY to
                    // capture a pair of PARENS with NO parameters within.
-                   $( $local_within_parens:tt )?
+                   $( $local_dotted_then_within_parens:tt )?
                   )
                )?
             )+
@@ -288,16 +288,16 @@ macro_rules! cami_partial_eq_full_squares {
                $( (
                    // This does NOT match "expressions" passed to functions. It's here ONLY to
                    // capture a pair of PARENS with NO parameters within.
-                   $( $local_after_ident_within_parens:tt )?
+                   $( $local_ident_then_within_parents:tt )?
                   )
                )?
                // Same as "local_dotted" part above.
                $( .
-                  $( $local_after_ident_dotted:tt )?
+                  $( $local_ident_then_dotted:tt )?
                   $( (
                        // This does NOT match "expressions" passed to functions. It's here ONLY to
                        // capture a pair of PARENS with NO parameters within.
-                       $( $local_after_ident_dotted_within_parens:tt )?
+                       $( $local_ident_then_dotted_then_within_parens:tt )?
                      )
                   )?
                )*
@@ -316,7 +316,7 @@ macro_rules! cami_partial_eq_full_squares {
             $( .
                $non_local_dotted:tt
                $( (
-                   $( $non_local_within_parens:tt )?
+                   $( $non_local_dotted_then_within_parens:tt )?
                   )
                )?
             )+
@@ -325,13 +325,13 @@ macro_rules! cami_partial_eq_full_squares {
            $(
                $non_local_ident:ident
                $( (
-                   $( $non_local_after_ident_within_parens:tt )?
+                   $( $non_local_ident_then_within_parents:tt )?
                   )
                )?
                $( .
-                  $( $non_local_after_ident_dotted:tt )?
+                  $( $non_local_ident_then_dotted:tt )?
                   $( (
-                       $( $non_local_after_ident_dotted_within_parens:tt )?
+                       $( $non_local_ident_then_dotted_then_within_parens:tt )?
                      )
                   )?
                )*
@@ -348,7 +348,7 @@ macro_rules! cami_partial_eq_full_squares {
             $( .
                $camigo_dotted:tt
                $( (
-                   $( $camigo_within_parens:tt )?
+                   $( $camigo_dotted_then_within_parens:tt )?
                   )
                )?
             )+
@@ -357,13 +357,13 @@ macro_rules! cami_partial_eq_full_squares {
            $(
                $camigo_ident:ident
                $( (
-                   $( $camigo_after_ident_within_parens:tt )?
+                   $( $camigo_ident_then_within_parens:tt )?
                   )
                )?
                $( .
-                  $( $camigo_after_ident_dotted:tt )?
+                  $( $camigo_ident_then_dotted:tt )?
                   $( (
-                       $( $camigo_after_ident_dotted_within_parens:tt )?
+                       $( $camigo_ident_then_dotted_then_within_parens:tt )?
                      )
                   )?
                )*
@@ -401,7 +401,7 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  $( .
                                   $local_dotted
                                   $( (
-                                       $( $local_within_parens )?
+                                       $( $local_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -409,7 +409,7 @@ macro_rules! cami_partial_eq_full_squares {
                          other $( .
                                   $local_dotted
                                   $( (
-                                       $( $local_within_parens )?
+                                       $( $local_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -418,13 +418,13 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  .
                                $local_ident
                                $( (
-                                    $( $local_after_ident_within_parens )?
+                                    $( $local_ident_then_within_parents )?
                                   )
                                )?
                                $( .
-                                  $( $local_after_ident_dotted )?
+                                  $( $local_ident_then_dotted )?
                                   $( (
-                                       $( $local_after_ident_dotted_within_parens )?
+                                       $( $local_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -432,13 +432,13 @@ macro_rules! cami_partial_eq_full_squares {
                          other  .
                                $local_ident
                                $( (
-                                    $( $local_after_ident_within_parens )?
+                                    $( $local_ident_then_within_parents )?
                                   )
                                )?
                                $( .
-                                  $( $local_after_ident_dotted )?
+                                  $( $local_ident_then_dotted )?
                                   $( (
-                                       $( $local_after_ident_dotted_within_parens )?
+                                       $( $local_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -455,7 +455,7 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  $( .
                                   $camigo_dotted
                                   $( (
-                                       $( $camigo_within_parens )?
+                                       $( $camigo_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -463,7 +463,7 @@ macro_rules! cami_partial_eq_full_squares {
                          other $( .
                                   $camigo_dotted
                                   $( (
-                                       $( $camigo_within_parens )?
+                                       $( $camigo_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -473,13 +473,13 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  .
                                $camigo_ident
                                $( (
-                                    $( $camigo_after_ident_within_parens )?
+                                    $( $camigo_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_after_ident_dotted )?
+                                  $( $camigo_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_after_ident_dotted_within_parens )?
+                                       $( $camigo_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -487,13 +487,13 @@ macro_rules! cami_partial_eq_full_squares {
                          other  .
                                $camigo_ident
                                $( (
-                                    $( $camigo_after_ident_within_parens )?
+                                    $( $camigo_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_after_ident_dotted )?
+                                  $( $camigo_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_after_ident_dotted_within_parens )?
+                                       $( $camigo_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -523,7 +523,7 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  $( .
                                   $non_local_dotted
                                   $( (
-                                       $( $non_local_within_parens )?
+                                       $( $non_local_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -531,7 +531,7 @@ macro_rules! cami_partial_eq_full_squares {
                          other $( .
                                   $non_local_dotted
                                   $( (
-                                       $( $non_local_within_parens )?
+                                       $( $non_local_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -540,13 +540,13 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  .
                                $non_local_ident
                                $( (
-                                    $( $non_local_after_ident_within_parens )?
+                                    $( $non_local_ident_then_within_parents )?
                                   )
                                )?
                                $( .
-                                  $( $non_local_after_ident_dotted )?
+                                  $( $non_local_ident_then_dotted )?
                                   $( (
-                                       $( $non_local_after_ident_dotted_within_parens )?
+                                       $( $non_local_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -554,13 +554,13 @@ macro_rules! cami_partial_eq_full_squares {
                          other  .
                                $non_local_ident
                                $( (
-                                    $( $non_local_after_ident_within_parens )?
+                                    $( $non_local_ident_then_within_parents )?
                                   )
                                )?
                                $( .
-                                  $( $non_local_after_ident_dotted )?
+                                  $( $non_local_ident_then_dotted )?
                                   $( (
-                                       $( $non_local_after_ident_dotted_within_parens )?
+                                       $( $non_local_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -577,7 +577,7 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  $( .
                                   $camigo_dotted
                                   $( (
-                                       $( $camigo_within_parens )?
+                                       $( $camigo_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -585,7 +585,7 @@ macro_rules! cami_partial_eq_full_squares {
                          other $( .
                                   $camigo_dotted
                                   $( (
-                                       $( $camigo_within_parens )?
+                                       $( $camigo_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -595,13 +595,13 @@ macro_rules! cami_partial_eq_full_squares {
                     $(&& this  .
                                $camigo_ident
                                $( (
-                                    $( $camigo_after_ident_within_parens )?
+                                    $( $camigo_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_after_ident_dotted )?
+                                  $( $camigo_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_after_ident_dotted_within_parens )?
+                                       $( $camigo_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -609,13 +609,13 @@ macro_rules! cami_partial_eq_full_squares {
                          other  .
                                $camigo_ident
                                $( (
-                                    $( $camigo_after_ident_within_parens )?
+                                    $( $camigo_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_after_ident_dotted )?
+                                  $( $camigo_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_after_ident_dotted_within_parens )?
+                                       $( $camigo_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
