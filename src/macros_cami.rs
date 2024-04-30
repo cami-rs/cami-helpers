@@ -56,16 +56,16 @@ macro_rules! cami_partial_eq {
             )
 
             [
-                {$crate::always_equal_ref},
+                ($crate::always_equal_ref::<Self>),
                 $( $local )*
             ]
             [
-                {$crate::always_equal_ref},
+                ($crate::always_equal_ref::<Self>),
                 $( $non_local )*
             ]
             $(
             [
-                {$crate::always_equal_ref},
+                ($crate::always_equal_ref::<Self>),
                 $( $camigo )*
             ]
             )?
@@ -91,10 +91,10 @@ macro_rules! cami_partial_eq_full_squares {
 
      [
         $(
-           $(($local_eq_closure:expr)
+           $({$local_get_closure:expr}
             )?
 
-           $({$local_get_closure:expr}
+           $(($local_ref_closure:expr)
             )?
 
            // This is necessary only to match fields/chains of fields that have the first/top level
@@ -141,10 +141,10 @@ macro_rules! cami_partial_eq_full_squares {
      ]
      [
         $(
-           $(($non_local_eq_closure:expr)
+           $({$non_local_get_closure:expr}
             )?
 
-           $({$non_local_get_closure:expr}
+           $(($non_local_ref_closure:expr)
             )?
 
            $(
@@ -177,6 +177,9 @@ macro_rules! cami_partial_eq_full_squares {
      [
         $(
            $({$camigo_get_closure:expr}
+            )?
+
+           $(($camigo_ref_closure:expr)
             )?
 
            $(
@@ -220,11 +223,14 @@ macro_rules! cami_partial_eq_full_squares {
                 Self::LOCALITY.debug_reachable_for_local();
                 true
                 $(
-                    $(&& $local_eq_closure(&self, &other)
+                    $(&& {
+                        let getter: fn(&Self) -> _ = $local_get_closure;
+                        getter(self) == getter(other)
+                      }
                      )?
 
                     $(&& {
-                        let getter = $local_get_closure;
+                        let getter: for<'a> fn(&'a Self) -> &'a _ = $local_ref_closure;
                         getter(self) == getter(other)
                       }
                      )?
@@ -279,6 +285,12 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                     $(&& {
                         let getter = $camigo_get_closure;
+                        getter(self).eq_local( getter(other) )
+                      }
+                     )?
+
+                    $(&& {
+                        let getter: for<'a> fn(&'a Self) -> &'a _ = $camigo_ref_closure;
                         getter(self).eq_local( getter(other) )
                       }
                      )?
@@ -338,11 +350,14 @@ macro_rules! cami_partial_eq_full_squares {
                 Self::LOCALITY.debug_reachable_for_non_local();
                 true
                 $(
-                    $(&& $non_local_eq_closure(&self, &other)
+                    $(&& {
+                        let getter = $non_local_get_closure;
+                        getter(self) == getter(other)
+                      }
                      )?
 
                     $(&& {
-                        let getter = $non_local_get_closure;
+                        let getter: for<'a> fn(&'a Self) -> &'a _ = $non_local_ref_closure;
                         getter(self) == getter(other)
                       }
                      )?
@@ -397,6 +412,12 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                     $(&& {
                         let getter = $camigo_get_closure;
+                        getter(self).eq_non_local( getter(other) )
+                      }
+                     )?
+
+                    $(&& {
+                        let getter: for<'a> fn(&'a Self) -> &'a _ = $camigo_ref_closure;
                         getter(self).eq_non_local( getter(other) )
                       }
                      )?
