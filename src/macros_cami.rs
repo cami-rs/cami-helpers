@@ -219,6 +219,8 @@ macro_rules! cami_partial_eq_full_squares {
         {
             const LOCALITY: $crate::Locality = $locality;
 
+            #[must_use]
+            #[inline]
             fn eq_local(&self, other: &Self) -> bool {
                 Self::LOCALITY.debug_reachable_for_local();
                 true
@@ -346,6 +348,8 @@ macro_rules! cami_partial_eq_full_squares {
                 )?
             }
 
+            #[must_use]
+            #[inline]
             fn eq_non_local(&self, other: &Self) -> bool {
                 Self::LOCALITY.debug_reachable_for_non_local();
                 true
@@ -533,6 +537,8 @@ macro_rules! cami_ord {
         impl $(<$($generic_left $(: $bound)?)+>)?
         camigo::CamiOrd for $struct_path $(<$($generic_right),+>)?
         $(where $($left : $right),+)? {
+            #[must_use]
+            #[inline]
             fn cmp_local(&self, other: &Self) -> ::core::cmp::Ordering {
                 use camigo::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_local();
@@ -575,6 +581,8 @@ macro_rules! cami_ord {
                 result
             }
 
+            #[must_use]
+            #[inline]
             fn cmp_non_local(&self, other: &Self) -> ::core::cmp::Ordering {
                 use camigo::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_non_local();
@@ -625,9 +633,13 @@ macro_rules! pure_local_c_partial_eq {
         impl camigo::CamiPartialEq for $T {
             const LOCALITY: $crate::Locality = $crate::Locality::PureLocal;
 
+            #[must_use]
+            #[inline]
             fn eq_local(&self, other: &Self) -> bool {
                 self == other
             }
+            #[must_use]
+            #[inline]
             fn eq_non_local(&self, other: &Self) -> bool {
                 ::camigo_helpers::debug_fail_unreachable_for_non_local();
                 self == other
@@ -643,10 +655,14 @@ macro_rules! pure_local_c_ord {
         impl camigo::CamiPartialOrd for $T {}
 
         impl camigo::CamiOrd for $T {
+            #[must_use]
+            #[inline]
             fn cmp_local(&self, other: &Self) -> core::cmp::Ordering {
                 self.cmp(other)
             }
 
+            #[must_use]
+            #[inline]
             fn cmp_non_local(&self, other: &Self) -> core::cmp::Ordering {
                 ::camigo_helpers::debug_fail_unreachable_for_non_local();
                 self.cmp(other)

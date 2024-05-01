@@ -55,7 +55,7 @@ impl Locality {
 /// Panic, in debug only, with the same message as [Locality::debug_reachable_for_local] when called
 /// with [Locality::PureNonLocal].
 #[inline]
-pub fn debug_fail_unreachable_for_local() {
+pub const fn debug_fail_unreachable_for_local() {
     Locality::PureNonLocal.debug_reachable_for_local()
 }
 
@@ -64,6 +64,6 @@ pub fn debug_fail_unreachable_for_local() {
 /// Panic, in debug only, with the same message as [Locality::debug_reachable_for_non_local] when
 /// called with [Locality::PureLocal].
 #[inline]
-pub fn debug_fail_unreachable_for_non_local() {
+pub const fn debug_fail_unreachable_for_non_local() {
     Locality::PureLocal.debug_reachable_for_non_local()
 }
