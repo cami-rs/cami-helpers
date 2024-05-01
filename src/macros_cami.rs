@@ -632,9 +632,6 @@ macro_rules! pure_local_c_partial_eq {
                 ::camigo_helpers::debug_fail_unreachable_for_non_local();
                 self == other
             }
-            fn eq_full(&self, other: &Self) -> bool {
-                self == other
-            }
         }
     };
 }
@@ -652,10 +649,6 @@ macro_rules! pure_local_c_ord {
 
             fn cmp_non_local(&self, other: &Self) -> core::cmp::Ordering {
                 ::camigo_helpers::debug_fail_unreachable_for_non_local();
-                self.cmp(other)
-            }
-
-            fn cmp_full(&self, other: &Self) -> core::cmp::Ordering {
                 self.cmp(other)
             }
         }
