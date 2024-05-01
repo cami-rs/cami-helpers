@@ -532,7 +532,140 @@ macro_rules! cami_ord {
     ) => {
         impl $(<$($generic_left $(: $bound)?)+>)?
         camigo::CamiPartialOrd for $struct_path $(<$($generic_right),+>)?
-        $(where $($left : $right),+)? {}
+        $(where $($left : $right),+)? {
+            #[must_use]
+            #[inline]
+            fn partial_cmp_local(&self, other: &Self) -> Option<Ordering> {
+                use camigo::CamiPartialEq;
+                Self::LOCALITY.debug_reachable_for_local();
+                let this = &self;
+                $( let this = &this.$t;
+                   let other = &other.$t;
+                )?
+                let result = None;
+                // LLVM should be able to optimize away the first comparison of
+                // result==::core::cmp::Ordering::Equal
+                $(
+                    if matches!(result, Some(::core::cmp::Ordering::Less | ::core::cmp::Ordering::Greater)) {
+                        return result;
+                    }
+                    $(let result =
+                         Some(this.$local_ident
+                        $(.$($local_ident_ident)? $($local_ident_idx)?
+                         )* .cmp(
+                         &other.$local_ident
+                        $(.$($local_ident_ident)? $($local_ident_idx)?
+                         )*
+                        ));
+                    )?
+                    $(let result =
+                         Some(this.$local_idx
+                        $(.$($local_idx_ident)? $($local_idx_idx)?
+                         )* .cmp(
+                         &other.$local_idx
+                        $(.$($local_idx_ident)? $($local_idx_idx)?
+                         )*
+                        ));
+                    )?
+                    $(let result =
+                        Some($local_cmp_closure(&this, &other));
+                    )?
+                    $(let result =
+                        Some($local_get_closure(&this).cmp(&$local_get_closure(&other)));
+                    )?
+                )*
+                result
+            }
+            #[must_use]
+            #[inline]
+            fn partial_cmp_non_local(&self, other: &Self) -> Option<Ordering> {
+                use camigo::CamiPartialEq;
+                Self::LOCALITY.debug_reachable_for_non_local();
+                let this = &self;
+                $( let this = &this.$t;
+                   let other = &other.$t;
+                )?
+                let result = None;
+                // LLVM should be able to optimize away the first comparison of
+                // result==::core::cmp::Ordering::Equal
+                $(
+                    if matches!(result, Some(::core::cmp::Ordering::Less | ::core::cmp::Ordering::Greater)) {
+                        return result;
+                    }
+                    $(let result =
+                         Some(this.$non_local_ident
+                        $(.$($non_local_ident_ident)? $($non_local_ident_idx)?
+                         )* .cmp(
+                         &other.$non_local_ident
+                        $(.$($non_local_ident_ident)? $($non_local_ident_idx)?
+                         )*
+                        ));
+                    )?
+                    $(let result =
+                         Some(this.$non_local_idx
+                        $(.$($non_local_idx_ident)? $($non_local_idx_idx)?
+                         )* .cmp(
+                         &other.$non_local_idx
+                        $(.$($non_local_idx_ident)? $($non_local_idx_idx)?
+                         )*
+                        ));
+                    )?
+                    $(let result =
+                        Some($non_local_cmp_closure(&this, &other));
+                    )?
+                    $(let result =
+                        Some($non_local_get_closure(&this).cmp(&$non_local_get_closure(&other)));
+                    )?
+                )*
+                result
+            }
+            // @TODO
+            /*
+            #[must_use]
+            #[inline]
+            fn lt_local(&self, other: &Self) -> bool {
+                self.len() < other.len()
+            }
+            #[must_use]
+            #[inline]
+            fn lt_non_local(&self, other: &Self) -> bool {
+                self < other
+            }
+
+            #[must_use]
+            #[inline]
+            fn le_local(&self, other: &Self) -> bool {
+                self.len() <= other.len()
+            }
+            #[must_use]
+            #[inline]
+            fn le_non_local(&self, other: &Self) -> bool {
+                self <= other
+            }
+
+            #[must_use]
+            #[inline]
+            fn gt_local(&self, other: &Self) -> bool {
+                self.len() > other.len()
+            }
+            #[must_use]
+            #[inline]
+            fn gt_non_local(&self, other: &Self) -> bool {
+                self > other
+            }
+
+            #[must_use]
+            #[inline]
+            fn ge_local(&self, other: &Self) -> bool {
+                self.len() >= other.len()
+            }
+            #[must_use]
+            #[inline]
+            fn ge_non_local(&self, other: &Self) -> bool {
+                self >= other
+            }
+            */
+        }
 
         impl $(<$($generic_left $(: $bound)?)+>)?
         camigo::CamiOrd for $struct_path $(<$($generic_right),+>)?
