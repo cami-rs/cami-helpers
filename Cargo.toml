@@ -1,5 +1,5 @@
 [package]
-name = "camigo-helpers"
+name = "cami-helpers"
 version = "0.0.1"
 edition = "2018"
 
@@ -8,7 +8,7 @@ categories = ["algorithms", "caching", "data-structures", "no-std", "text-proces
 
 authors = ["Peter Kehl <peter.kehl@gmail.com>"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/peter-kehl/camigo-helpers"
+repository = "https://github.com/cami-rs/cami-helpers"
 
 # TODO MSRV
 

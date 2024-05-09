@@ -3,5 +3,5 @@
 version = 3
 
 [[package]]
-name = "camigo-helpers"
+name = "cami-helpers"
 version = "0.0.1"

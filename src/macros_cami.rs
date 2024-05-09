@@ -3,7 +3,7 @@
 /// The main benefit: With this, we don't need to capture the wrapped/forwarded type in
 /// [cami_partial_eq] & [cami_ord] when we apply those macros to a (`#[repr(transparent)]`) wrapper
 /// struct or tuple. See also how we needed `$t_type:ty` (in commit `06cfc12`):
-/// <https://github.com/peter-kehl/camigo/blob/06cfc120812179e71a291a92b9c1034a792551eb/src/macros_c.rs#L135>.
+/// <https://github.com/cami-rs/cami/blob/06cfc120812179e71a291a92b9c1034a792551eb/src/macros_c.rs#L135>.
 ///
 /// A smaller benefit: Less duplication in `c_partial_eq` & `c_ord` macros: no need for an
 /// (anonymous) filler closure.
@@ -39,7 +39,7 @@ macro_rules! cami_partial_eq {
     ]
     $(
     [
-        $( $camigo:tt )*
+        $( $cami:tt )*
     ]
     )?
     ) => {
@@ -66,7 +66,7 @@ macro_rules! cami_partial_eq {
             $(
             [
                 ($crate::always_equal_ref::<Self>),
-                $( $camigo )*
+                $( $cami )*
             ]
             )?
         }
@@ -176,32 +176,32 @@ macro_rules! cami_partial_eq_full_squares {
      $(
      [
         $(
-           $({$camigo_get_closure:expr}
+           $({$cami_get_closure:expr}
             )?
 
-           $(($camigo_ref_closure:expr)
+           $(($cami_ref_closure:expr)
             )?
 
            $(
             $( .
-               $camigo_dotted:tt
+               $cami_dotted:tt
                $( (
-                   $( to-match-optional-outer-parens: $camigo_dotted_then_within_parens:vis )?
+                   $( to-match-optional-outer-parens: $cami_dotted_then_within_parens:vis )?
                   )
                )?
             )+
            )?
 
            $(
-               $camigo_ident:ident
+               $cami_ident:ident
                $( (
-                   $( to-match-optional-outer-parens: $camigo_ident_then_within_parens:vis )?
+                   $( to-match-optional-outer-parens: $cami_ident_then_within_parens:vis )?
                   )
                )?
                $( .
-                  $( $camigo_ident_then_dotted:tt )?
+                  $( $cami_ident_then_dotted:tt )?
                   $( (
-                       $( to-match-optional-outer-parens: $camigo_ident_then_dotted_then_within_parens:vis )?
+                       $( to-match-optional-outer-parens: $cami_ident_then_dotted_then_within_parens:vis )?
                      )
                   )?
                )*
@@ -213,7 +213,7 @@ macro_rules! cami_partial_eq_full_squares {
         /* */
         // const _: () = { panic!( stringify!(
         impl $(< $( $generic_left )+ >)?
-        camigo::CamiPartialEq for
+        cami::CamiPartialEq for
         $( $struct_path_and_generic_right )+
         $(where $( $where )* )?
         {
@@ -286,29 +286,29 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                 $(
                     $(&& {
-                        let getter: fn(&Self) -> _ = $camigo_get_closure;
+                        let getter: fn(&Self) -> _ = $cami_get_closure;
                         getter(self).eq_local( getter(other) )
                       }
                      )?
 
                     $(&& {
-                        let getter: for<'a> fn(&'a Self) -> &'a _ = $camigo_ref_closure;
+                        let getter: for<'a> fn(&'a Self) -> &'a _ = $cami_ref_closure;
                         getter(self).eq_local( getter(other) )
                       }
                      )?
 
                     $(&& self  $( .
-                                  $camigo_dotted
+                                  $cami_dotted
                                   $( (
-                                       $( $camigo_dotted_then_within_parens )?
+                                       $( $cami_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
                         .eq_local( &
                          other $( .
-                                  $camigo_dotted
+                                  $cami_dotted
                                   $( (
-                                       $( $camigo_dotted_then_within_parens )?
+                                       $( $cami_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -316,29 +316,29 @@ macro_rules! cami_partial_eq_full_squares {
                     )?
 
                     $(&& self  .
-                               $camigo_ident
+                               $cami_ident
                                $( (
-                                    $( $camigo_ident_then_within_parens )?
+                                    $( $cami_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_ident_then_dotted )?
+                                  $( $cami_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_ident_then_dotted_then_within_parens )?
+                                       $( $cami_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
                         .eq_local( &
                          other  .
-                               $camigo_ident
+                               $cami_ident
                                $( (
-                                    $( $camigo_ident_then_within_parens )?
+                                    $( $cami_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_ident_then_dotted )?
+                                  $( $cami_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_ident_then_dotted_then_within_parens )?
+                                       $( $cami_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -415,29 +415,29 @@ macro_rules! cami_partial_eq_full_squares {
                 $(
                 $(
                     $(&& {
-                        let getter: fn(&Self) -> _ = $camigo_get_closure;
+                        let getter: fn(&Self) -> _ = $cami_get_closure;
                         getter(self).eq_non_local( getter(other) )
                       }
                      )?
 
                     $(&& {
-                        let getter: for<'a> fn(&'a Self) -> &'a _ = $camigo_ref_closure;
+                        let getter: for<'a> fn(&'a Self) -> &'a _ = $cami_ref_closure;
                         getter(self).eq_non_local( getter(other) )
                       }
                      )?
 
                     $(&& self  $( .
-                                  $camigo_dotted
+                                  $cami_dotted
                                   $( (
-                                       $( $camigo_dotted_then_within_parens )?
+                                       $( $cami_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
                         .eq_non_local( &
                          other $( .
-                                  $camigo_dotted
+                                  $cami_dotted
                                   $( (
-                                       $( $camigo_dotted_then_within_parens )?
+                                       $( $cami_dotted_then_within_parens )?
                                      )
                                    )?
                                 )+
@@ -445,29 +445,29 @@ macro_rules! cami_partial_eq_full_squares {
                     )?
 
                     $(&& self  .
-                               $camigo_ident
+                               $cami_ident
                                $( (
-                                    $( $camigo_ident_then_within_parens )?
+                                    $( $cami_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_ident_then_dotted )?
+                                  $( $cami_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_ident_then_dotted_then_within_parens )?
+                                       $( $cami_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
                         .eq_non_local( &
                          other  .
-                               $camigo_ident
+                               $cami_ident
                                $( (
-                                    $( $camigo_ident_then_within_parens )?
+                                    $( $cami_ident_then_within_parens )?
                                   )
                                )?
                                $( .
-                                  $( $camigo_ident_then_dotted )?
+                                  $( $cami_ident_then_dotted )?
                                   $( (
-                                       $( $camigo_ident_then_dotted_then_within_parens )?
+                                       $( $cami_ident_then_dotted_then_within_parens )?
                                      )
                                    )?
                                 )*
@@ -482,7 +482,7 @@ macro_rules! cami_partial_eq_full_squares {
     };
 }
 
-/// Like [c_partial_eq], but for [camigo::CamiOrd].
+/// Like [c_partial_eq], but for [cami::CamiOrd].
 #[macro_export]
 macro_rules! cami_ord {
     ($(<$($generic_left:tt $(: $bound:tt)?),+>)?
@@ -531,26 +531,26 @@ macro_rules! cami_ord {
      ]
     ) => {
         impl $(<$($generic_left $(: $bound)?)+>)?
-        camigo::CamiPartialOrd for $struct_path $(<$($generic_right),+>)?
+        cami::CamiPartialOrd for $struct_path $(<$($generic_right),+>)?
         $(where $($left : $right),+)? {
             #[must_use]
             #[inline]
-            fn partial_cmp_local(&self, other: &Self) -> Option<Ordering> {
-                use camigo::CamiPartialEq;
+            fn partial_cmp_local(&self, other: &Self) -> ::core::option::Option<::core::cmp::Ordering> {
+                use cami::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_local();
                 let this = &self;
                 $( let this = &this.$t;
                    let other = &other.$t;
                 )?
-                let result = None;
+                let result = ::core::option::Option::None;
                 // LLVM should be able to optimize away the first comparison of
                 // result==::core::cmp::Ordering::Equal
                 $(
-                    if matches!(result, Some(::core::cmp::Ordering::Less | ::core::cmp::Ordering::Greater)) {
+                    if matches!(result, ::core::option::Option::Some(::core::cmp::Ordering::Less | ::core::cmp::Ordering::Greater)) {
                         return result;
                     }
                     $(let result =
-                         Some(this.$local_ident
+                         ::core::option::Option::Some(this.$local_ident
                         $(.$($local_ident_ident)? $($local_ident_idx)?
                          )* .cmp(
                          &other.$local_ident
@@ -559,7 +559,7 @@ macro_rules! cami_ord {
                         ));
                     )?
                     $(let result =
-                         Some(this.$local_idx
+                         ::core::option::Option::Some(this.$local_idx
                         $(.$($local_idx_ident)? $($local_idx_idx)?
                          )* .cmp(
                          &other.$local_idx
@@ -568,32 +568,32 @@ macro_rules! cami_ord {
                         ));
                     )?
                     $(let result =
-                        Some($local_cmp_closure(&this, &other));
+                        ::core::option::Option::Some($local_cmp_closure(&this, &other));
                     )?
                     $(let result =
-                        Some($local_get_closure(&this).cmp(&$local_get_closure(&other)));
+                        ::core::option::Option::Some($local_get_closure(&this).cmp(&$local_get_closure(&other)));
                     )?
                 )*
                 result
             }
             #[must_use]
             #[inline]
-            fn partial_cmp_non_local(&self, other: &Self) -> Option<Ordering> {
-                use camigo::CamiPartialEq;
+            fn partial_cmp_non_local(&self, other: &Self) -> ::core::option::Option<::core::cmp::Ordering> {
+                use cami::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_non_local();
                 let this = &self;
                 $( let this = &this.$t;
                    let other = &other.$t;
                 )?
-                let result = None;
+                let result = ::core::option::Option::None;
                 // LLVM should be able to optimize away the first comparison of
                 // result==::core::cmp::Ordering::Equal
                 $(
-                    if matches!(result, Some(::core::cmp::Ordering::Less | ::core::cmp::Ordering::Greater)) {
+                    if matches!(result, ::core::option::Option::Some(::core::cmp::Ordering::Less | ::core::cmp::Ordering::Greater)) {
                         return result;
                     }
                     $(let result =
-                         Some(this.$non_local_ident
+                         ::core::option::Option::Some(this.$non_local_ident
                         $(.$($non_local_ident_ident)? $($non_local_ident_idx)?
                          )* .cmp(
                          &other.$non_local_ident
@@ -602,7 +602,7 @@ macro_rules! cami_ord {
                         ));
                     )?
                     $(let result =
-                         Some(this.$non_local_idx
+                         ::core::option::Option::Some(this.$non_local_idx
                         $(.$($non_local_idx_ident)? $($non_local_idx_idx)?
                          )* .cmp(
                          &other.$non_local_idx
@@ -611,10 +611,10 @@ macro_rules! cami_ord {
                         ));
                     )?
                     $(let result =
-                        Some($non_local_cmp_closure(&this, &other));
+                        ::core::option::Option::Some($non_local_cmp_closure(&this, &other));
                     )?
                     $(let result =
-                        Some($non_local_get_closure(&this).cmp(&$non_local_get_closure(&other)));
+                        ::core::option::Option::Some($non_local_get_closure(&this).cmp(&$non_local_get_closure(&other)));
                     )?
                 )*
                 result
@@ -668,12 +668,12 @@ macro_rules! cami_ord {
         }
 
         impl $(<$($generic_left $(: $bound)?)+>)?
-        camigo::CamiOrd for $struct_path $(<$($generic_right),+>)?
+        cami::CamiOrd for $struct_path $(<$($generic_right),+>)?
         $(where $($left : $right),+)? {
             #[must_use]
             #[inline]
             fn cmp_local(&self, other: &Self) -> ::core::cmp::Ordering {
-                use camigo::CamiPartialEq;
+                use cami::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_local();
                 let this = &self;
                 $( let this = &this.$t;
@@ -717,7 +717,7 @@ macro_rules! cami_ord {
             #[must_use]
             #[inline]
             fn cmp_non_local(&self, other: &Self) -> ::core::cmp::Ordering {
-                use camigo::CamiPartialEq;
+                use cami::CamiPartialEq;
                 Self::LOCALITY.debug_reachable_for_non_local();
                 let this = &self;
                 $( let this = &this.$t;
@@ -763,7 +763,7 @@ macro_rules! cami_ord {
 #[macro_export]
 macro_rules! pure_local_c_partial_eq {
     ($T:ident) => {
-        impl camigo::CamiPartialEq for $T {
+        impl cami::CamiPartialEq for $T {
             const LOCALITY: $crate::Locality = $crate::Locality::PureLocal;
 
             #[must_use]
@@ -774,7 +774,7 @@ macro_rules! pure_local_c_partial_eq {
             #[must_use]
             #[inline]
             fn eq_non_local(&self, other: &Self) -> bool {
-                ::camigo_helpers::debug_fail_unreachable_for_non_local();
+                ::cami_helpers::debug_fail_unreachable_for_non_local();
                 self == other
             }
         }
@@ -785,9 +785,27 @@ macro_rules! pure_local_c_partial_eq {
 #[macro_export]
 macro_rules! pure_local_c_ord {
     ($T:ident) => {
-        impl camigo::CamiPartialOrd for $T {}
+        impl cami::CamiPartialOrd for $T {
+            #[must_use]
+            #[inline]
+            fn partial_cmp_local(
+                &self,
+                other: &Self,
+            ) -> ::core::option::Option<::core::cmp::Ordering> {
+                self.partial_cmp(other)
+            }
+            #[must_use]
+            #[inline]
+            fn partial_cmp_non_local(
+                &self,
+                other: &Self,
+            ) -> ::core::option::Option<::core::cmp::Ordering> {
+                ::cami_helpers::debug_fail_unreachable_for_non_local();
+                self.partial_cmp(other)
+            }
+        }
 
-        impl camigo::CamiOrd for $T {
+        impl cami::CamiOrd for $T {
             #[must_use]
             #[inline]
             fn cmp_local(&self, other: &Self) -> core::cmp::Ordering {
@@ -797,7 +815,7 @@ macro_rules! pure_local_c_ord {
             #[must_use]
             #[inline]
             fn cmp_non_local(&self, other: &Self) -> core::cmp::Ordering {
-                ::camigo_helpers::debug_fail_unreachable_for_non_local();
+                ::cami_helpers::debug_fail_unreachable_for_non_local();
                 self.cmp(other)
             }
         }
